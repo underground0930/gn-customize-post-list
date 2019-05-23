@@ -65,7 +65,7 @@ class Gn_customize_post_list
     }
     public function admin_css()
     {
-        wp_enqueue_style('gcpl_css', GCPL_PLUGIN_URL . '/admin/css/style.css');
+        // wp_enqueue_style('gcpl_css', GCPL_PLUGIN_URL . '/admin/css/style.css');
     }
 
     public function add_admin_menu()

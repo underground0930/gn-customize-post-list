@@ -1,6 +1,5 @@
-(() => {
   const { Component, render, Fragment } = wp.element; // wp.elementにReact関連が格納されている。
-
+  import '../css/style.css';
   class App extends Component {
     constructor() {
       super();
@@ -22,6 +21,8 @@
       );
     }
   }
-
+  
+  
   render(<App />, document.getElementById('gcpl-admin-app'));
-})();
+  
+  
