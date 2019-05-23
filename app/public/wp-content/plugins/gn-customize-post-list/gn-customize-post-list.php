@@ -61,7 +61,7 @@ class Gn_customize_post_list
 
     public function admin_script()
     {
-        wp_enqueue_script('gcpl_js', GCPL_PLUGIN_URL . '/admin/js/scripts.js', [ 'wp-element' ], '1.0.0', true );
+        wp_enqueue_script('gcpl_js', GCPL_PLUGIN_URL . '/admin/js/scripts.js', [ 'wp-element' ], '1.0.0', true);
     }
     public function admin_css()
     {
@@ -86,14 +86,27 @@ class Gn_customize_post_list
         // $taxonomies = get_taxonomies( array( 'object_type' => array( 'news'), '_builtin' => false  ));
         $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object')); ?>
 <div class="gcpl-admin-wrap">
-    <h2 class="gcpl-title"><?php echo GCPL_PLUGIN_NAME; ?>
+    <script>
+        <?php 
+            $all_array = array();
+            foreach($this->post_types as $post_type){
+                $child_array = array();
+                $child_array['name'] = $post_type->name;
+                $child_array['label'] = $post_type->label;
+                array_push($all_array, $child_array);
+            }
+            echo 'var gcpl_admin_json = ' . json_encode( $all_array);        
+        ?>
+    </script>
+    <h2 class="gcpl-admin-title"><?php echo GCPL_PLUGIN_NAME; ?>
     </h2>
-    <p class="gcpl-text"><b>各一覧画面をカスタマイズします</b></p>
-    <form class="gcpl-form" method="post" action=''>
+    <p class="gcpl-admin-text"><b>各一覧画面をカスタマイズします</b></p>
+    <form class="gcpl-admin-form" method="post" action=''>
         <?php
             wp_nonce_field('nonce-key', 'gcpl-page');
         foreach ($this->post_types as $post_type):
         ?>
+        <div id="gcpl-admin-app"></div>
         <h4>【<?php echo $post_type->label; ?>】
         </h4>
         <ul>
