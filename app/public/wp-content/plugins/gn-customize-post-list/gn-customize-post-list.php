@@ -11,20 +11,20 @@
  * Version: 1.0.0
  * Author: go.nishiduka
  * Author URI: https://htmlgo.site/
- * Text Domain: gcpl
+ * Text Domain: gncpl
  * Domain Path: /languages
 **/
 
-define('GCPL_VERSION', '1.0.0');
-define('GCPL_PLUGIN_BASENAME', plugin_basename(__FILE__));
-define('GCPL_PLUGIN_NAME', trim(dirname(GCPL_PLUGIN_BASENAME), '/'));
-define('GCPL_PLUGIN_DIR', untrailingslashit(dirname(__FILE__)));
-define('GCPL_PLUGIN_URL', untrailingslashit(plugins_url('', __FILE__)));
+define('GNCPL_VERSION', '1.0.0');
+define('GNCPL_PLUGIN_BASENAME', plugin_basename(__FILE__));
+define('GNCPL_PLUGIN_NAME', trim(dirname(GNCPL_PLUGIN_BASENAME), '/'));
+define('GNCPL_PLUGIN_DIR', untrailingslashit(dirname(__FILE__)));
+define('GNCPL_PLUGIN_URL', untrailingslashit(plugins_url('', __FILE__)));
 
 class Gn_customize_post_list
 {
     private $post_types;
-    private $gcpl_options;
+    private $gncpl_options;
     private $select_options = array(
       'title' => 'タイトル',
       'content' => '本文',
@@ -38,7 +38,7 @@ class Gn_customize_post_list
     
     public function __construct()
     {
-        $this->gcpl_options = get_option(' gcpl_options ');
+        $this->gncpl_options = get_option(' gncpl_options ');
         $this->post_types = array(
             'post' => (object) array(
                 'name' => 'post',
@@ -61,11 +61,11 @@ class Gn_customize_post_list
 
     public function admin_script()
     {
-        wp_enqueue_script('gcpl_js', GCPL_PLUGIN_URL . '/admin/js/scripts.js', [ 'wp-element' ], '1.0.0', true);
+        wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', [ 'wp-element' ], '1.0.0', true);
     }
     public function admin_css()
     {
-        // wp_enqueue_style('gcpl_css', GCPL_PLUGIN_URL . '/admin/css/style.css');
+        // wp_enqueue_style('gncpl_css', GNCPL_PLUGIN_URL . '/admin/css/style.css');
     }
 
     public function add_admin_menu()
@@ -85,68 +85,43 @@ class Gn_customize_post_list
     {
         // $taxonomies = get_taxonomies( array( 'object_type' => array( 'news'), '_builtin' => false  ));
         $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object')); ?>
-<div class="gcpl-admin-wrap">
+<div class="gncpl-admin-wrap">
     <script>
-        <?php 
-            $all_array = array();
-            foreach($this->post_types as $post_type){
-                $child_array = array();
-                $child_array['name'] = $post_type->name;
-                $child_array['label'] = $post_type->label;
-                array_push($all_array, $child_array);
-            }
-            echo 'var gcpl_admin_json = ' . json_encode( $all_array);        
+        <?php
+        $post_types_array = array();
+        
+        foreach ($this->post_types as $post_type) {
+            array_push($post_types_array, array(
+                'name' => $post_type->name,
+                'label' => $post_type->label,
+            ));
+        }
+                    
+        echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';
+        
+        echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';';
         ?>
     </script>
-    <h2 class="gcpl-admin-title"><?php echo GCPL_PLUGIN_NAME; ?>
-    </h2>
-    <p class="gcpl-admin-text"><b>各一覧画面をカスタマイズします</b></p>
-    <form class="gcpl-admin-form" method="post" action=''>
-        <?php
-            wp_nonce_field('nonce-key', 'gcpl-page');
-        foreach ($this->post_types as $post_type):
-        ?>
-        <div id="gcpl-admin-app"></div>
-        <h4>【<?php echo $post_type->label; ?>】
-        </h4>
-        <ul>
-            <?php for ($i=0; $i<5; $i++):  ?>
-            <li style="display:inline-block;">
-                <?php echo $i+1; ?>列目 : <select
-                    name="<?php echo "gcpl_options[{$post_type->name}][{$i}]" ; ?>">
-                    <?php
-                            $select_count = 0;
-        foreach ($this->select_options as $key => $value):
-                        ?>
-                    <option
-                        value='<?php echo $key; ?>'
-                        <?php echo (isset($this->gcpl_options[$post_type->name][$i]) && $this->gcpl_options[$post_type->name][$i] == $key) ? "selected" : ''; ?>><?php echo $value; ?>
-                    </option>
-                    <?php  endforeach; ?>
-                </select>
-            </li>
-            <?php endfor; ?>
-        </ul>
-        <hr />
-        <?php  endforeach; ?>
-        <p>
-            <input type='submit' value="save" class="button button-primary button-large">
-        </p>
-    </form>
+
+    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?></h2>    
+    <p class="gncpl-admin-text"><b>各一覧画面をカスタマイズします</b></p>
+    <?php wp_nonce_field('nonce-key', 'gncpl-page'); ?>
+    <div id="gncpl-admin-app"></div>
+    <p><input type='submit' value="save" class="button button-primary button-large"></p>
 </div>
 <?php
     }
         
     public function admin_init()
     {
-        if (filter_input(INPUT_POST, 'gcpl-page')) {
-            if (check_admin_referer('nonce-key', 'gcpl-page')) {
-                if ($gcpl_options = filter_input(INPUT_POST, 'gcpl_options', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY)) {
-                    update_option('gcpl_options', $gcpl_options);
+        if (filter_input(INPUT_POST, 'gncpl-page')) {
+            if (check_admin_referer('nonce-key', 'gncpl-page')) {
+                if ($gncpl_options = filter_input(INPUT_POST, 'gncpl_options', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY)) {
+                    update_option('gncpl_options', $gncpl_options);
                 } else {
-                    update_option('gcpl_options', '');
+                    update_option('gncpl_options', '');
                 }
-                wp_safe_redirect(menu_page_url('gcpl-page', false));
+                wp_safe_redirect(menu_page_url('gncpl-page', false));
             }
         }
     }
@@ -157,9 +132,9 @@ class Gn_customize_post_list
         global $post;
         $post_type = get_post_type($post);
 
-        if (isset($this->gcpl_options[$post_type])) {
+        if (isset($this->gncpl_options[$post_type])) {
             $new_array = $this->default_column;
-            foreach ($this->gcpl_options[$post_type] as $item) {
+            foreach ($this->gncpl_options[$post_type] as $item) {
                 $new_array[$item] = $this->select_options[$item];
             }
             $columns = $new_array;

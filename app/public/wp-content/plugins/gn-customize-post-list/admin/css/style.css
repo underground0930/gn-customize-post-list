@@ -1,3 +1,16 @@
-#gcpl-admin-app{
-  background: pink;
+.gncpl-admin-section{
+}
+.gncpl-admin-list{
+  display:flex;
+  margin-top:0;
+}
+.gncpl-admin-listChild{
+  margin: 0 5px 0 0;
+}
+.gncpl-admin-listAdd{
+  
+}
+.gncpl-admin-listDelete{
+  display:block !important;
+  margin: 10px 0 0;
 }
