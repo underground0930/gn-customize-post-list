@@ -56,6 +56,12 @@ class Gn_customize_post_list
         add_action('admin_print_scripts', array( $this, 'admin_script'));
 
         add_action('admin_init', array($this, 'admin_init'));
+        
+        // プラグイン有効化された時の処理
+        register_activation_hook(__FILE__, array($this, 'activationHook'));
+        // プラグイン無効化された時の処理
+        register_deactivation_hook(__FILE__, array($this, 'deactivationHook'));
+
     }
 
 
@@ -97,8 +103,8 @@ class Gn_customize_post_list
             ));
         }
                     
-        echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';
-        
+        echo 'var admin_ajax_url  = "' . admin_url('admin-ajax.php', __FILE__) . '";';
+        echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';        
         echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';';
         ?>
     </script>
@@ -112,7 +118,7 @@ class Gn_customize_post_list
 <?php
     }
         
-    public function admin_init()
+    function admin_init()
     {
         if (filter_input(INPUT_POST, 'gncpl-page')) {
             if (check_admin_referer('nonce-key', 'gncpl-page')) {
@@ -126,7 +132,7 @@ class Gn_customize_post_list
         }
     }
         
-    public function add_column_name($columns)
+    function add_column_name($columns)
     { // 一覧に列を追加
 
         global $post;
@@ -143,7 +149,7 @@ class Gn_customize_post_list
         return $columns;
     }
     
-    public function add_column_value($column_name, $post_id)
+    function add_column_value($column_name, $post_id)
     { // 列に値を表示
         global $post;
         $post_type = get_post_type($post);
@@ -181,7 +187,7 @@ class Gn_customize_post_list
      * 管理画面の投稿一覧にカスタムフィールドの絞り込み選択機能を追加します。
      */
 
-    public function add_custom_taxonomies_term_filter()
+    function add_custom_taxonomies_term_filter()
     {
         global $post_type;
         $taxonomies = get_taxonomies(array( 'object_type' => array( $post_type ), '_builtin' => false ), 'object');
@@ -197,6 +203,14 @@ class Gn_customize_post_list
                 'value_field' => 'slug',
             ));
         }
+    }
+    function activationHook(){
+        if(!get_option('gncpl_options')){
+            update_option('gncpl_options', array());
+        }
+    }
+    function deactivationHook(){
+        delete_option('gncpl_options');
     }
 }
 

@@ -1,16 +1,28 @@
 .gncpl-admin-section{
+  margin: 0 0 20px;
+  padding: 0 0 20px;
+  border-bottom:1px solid #ccc;
 }
 .gncpl-admin-list{
   display:flex;
   margin-top:0;
 }
 .gncpl-admin-listChild{
-  margin: 0 5px 0 0;
+  margin: 0 15px 0 0;
 }
 .gncpl-admin-listAdd{
   
 }
+.gncpl-admin-litDeleteWrap{
+  text-align:right;
+  margin: 0 5px 0 !important;
+}
 .gncpl-admin-listDelete{
-  display:block !important;
-  margin: 10px 0 0;
+  margin: 10px 0 0 !important;
+}
+.gncpl-admin-btn{
+  margin: 0 10px 0 !important;
+}
+.gncpl-admin-input{
+  width:100px;
 }
