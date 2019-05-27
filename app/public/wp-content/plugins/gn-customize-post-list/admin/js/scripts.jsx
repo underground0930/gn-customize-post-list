@@ -1,4 +1,4 @@
-const { Component, render, Fragment } = wp.element; // wp.elementにReact関連が格納されている。
+const { Component, render, Fragment } = wp.element;
 import '../css/style.css';
 import deepcopy from 'deepcopy';
 import axios from 'axios';
@@ -13,12 +13,14 @@ const OPTIONS = [
 ];
 const DEFAULT_OPTION = {
   key: 'title',
+  label: null,
   value: null
 };
 const DEFAULT_OPTIONS = [
   DEFAULT_OPTION,
   {
     key: 'date',
+    label: null,
     value: null
   }
 ];
@@ -70,10 +72,10 @@ class App extends Component {
       };
     });
   }
-  updateText(e, type, i) {
+  updateText(which , e, type, i) {
     const value = e.target.value;
     this.setState(prevState => {
-      prevState.options[type][i]['value'] = value;
+      prevState.options[type][i][which] = value;
       return {
         options: prevState.options
       };
@@ -88,6 +90,7 @@ class App extends Component {
     this.setState(prevState => {
       prevState.options[type][i]['key'] = val;
       if (!this.checkSelectType) {
+        prevState.options[type][i]['label'] = null;
         prevState.options[type][i]['value'] = null;
       }
       return {
@@ -108,13 +111,8 @@ class App extends Component {
   }
   updateOptions() {
 
-    // let params = new URLSearchParams();
-    // params.append('action', 'abcde');
-    // params.append('security', window.security);
-    // params.append('gncpl_options', this.state.options);    
-
     const data = {
-        action: 'abcde',
+        action: 'update_gncpl_options',
         security: window.security,
         gncpl_options: this.state.options
       };
@@ -128,9 +126,11 @@ class App extends Component {
     axios(options)
     .then(function (response) {
       console.log(response);
+      alert('データを更新しました');
     })
     .catch(function (error) {
       console.log(error);
+      alert('データの更新に失敗しました');
     });
   }
   render() {
@@ -144,7 +144,7 @@ class App extends Component {
                 this.state.options[type.name].map((v, i) => {
                   return (
                     <li className="gncpl-admin-listChild" key={i}>
-                      <b>key :</b>
+                      <b>type :</b>
                       <select
                         className="gncpl-admin-listSelect"
                         value={v['key']}
@@ -160,10 +160,24 @@ class App extends Component {
                           );
                         })}
                       </select>
+                      
                       {(() => {
                         if (this.checkSelectType(v.key)) {
                           return (
+                            <Fragment>
                             <div>
+                              <b>label : </b>
+                              <input
+                                className="gncpl-admin-input"
+                                type="text"
+                                value={v.label}
+                                placeholder="please input label"
+                                onChange={e => {
+                                  this.updateText('label', e, type.name, i);
+                                }}
+                              />
+                              </div>
+                              <div>         
                               <b>val : </b>
                               <input
                                 className="gncpl-admin-input"
@@ -171,10 +185,11 @@ class App extends Component {
                                 value={v.value}
                                 placeholder="please input slug"
                                 onChange={e => {
-                                  this.updateText(e, type.name, i);
+                                  this.updateText('value', e, type.name, i);
                                 }}
                               />
                             </div>
+                            </Fragment>
                           );
                         }
                       })()}
@@ -186,7 +201,7 @@ class App extends Component {
                           }}
                           className="button btn-danger button-large gncpl-admin-listDelete"
                         >
-                          削除
+                          delete
                         </button>
                       </p>
                     </li>
@@ -200,7 +215,7 @@ class App extends Component {
                 this.add(type.name);
               }}
             >
-              追加
+              add row
             </button>
             <button
               class="gncpl-admin-listReset gncpl-admin-btn button button button-primary button-large"
@@ -209,11 +224,11 @@ class App extends Component {
                 this.resetSelect(type.name);
               }}
             >
-              リセット
+              reset
             </button>
           </section>
         ))}
-        <input type="submit" value="update" onClick={this.updateOptions} />
+        <input className="gncpl-admin-submit gncpl-admin-btn button button button-primary button-large" type="submit" value="update" onClick={this.updateOptions} />
       </Fragment>
     );
   }

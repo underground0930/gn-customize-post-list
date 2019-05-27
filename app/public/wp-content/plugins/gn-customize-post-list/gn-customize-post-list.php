@@ -62,17 +62,22 @@ class Gn_customize_post_list
         // プラグイン無効化された時の処理
         register_deactivation_hook(__FILE__, array($this, 'deactivationHook'));
         
-        add_action('wp_ajax_abcde', array($this, 'my_action_callback'));
+        add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback'));
 
     }
 
-    public function my_action_callback(){
-        if(isset($_POST['gncpl_options']) && check_ajax_referer( 'gncpl_nonce', 'security' )){
-            update_option('gncpl_options', ($_POST['gncpl_options']));
-            // update_option('gncpl_options', $arr);
-            exit;
+    public function ajax_update_callback(){
+
+        $error = new WP_Error();
+        $options = $_POST['gncpl_options'];
+
+        if(isset($options) && check_ajax_referer( 'gncpl_nonce', 'security' )){
+            update_option('gncpl_options', $options);
+            $error->add('200', 'success');
+        }else{
+            $error->add('100', 'security error');
         }
-        echo 'ERROR';
+        echo $error->get_error_message();
         exit;
     }
     
@@ -100,7 +105,6 @@ class Gn_customize_post_list
     
     public function custom_admin()
     {
-        // $taxonomies = get_taxonomies( array( 'object_type' => array( 'news'), '_builtin' => false  ));
         $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object')); ?>
 <div class="gncpl-admin-wrap">
     <script>
@@ -122,26 +126,24 @@ class Gn_customize_post_list
     </script>
 
     <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?></h2>    
-    <p class="gncpl-admin-text"><b>各一覧画面をカスタマイズします</b></p>
     <?php wp_nonce_field('nonce-key', 'gncpl-page'); ?>
     <div id="gncpl-admin-app"></div>
-    <!-- <p><input type='submit' value="save" class="button button-primary button-large"></p> -->
 </div>
 <?php
     }
         
     function admin_init()
     {
-        if (filter_input(INPUT_POST, 'gncpl-page')) {
-            if (check_admin_referer('nonce-key', 'gncpl-page')) {
-                if ($gncpl_options = filter_input(INPUT_POST, 'gncpl_options', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY)) {
-                    update_option('gncpl_options', $gncpl_options);
-                } else {
-                    update_option('gncpl_options', '');
-                }
-                wp_safe_redirect(menu_page_url('gncpl-page', false));
-            }
-        }
+        // if (filter_input(INPUT_POST, 'gncpl-page')) {
+        //     if (check_admin_referer('nonce-key', 'gncpl-page')) {
+        //         if ($gncpl_options = filter_input(INPUT_POST, 'gncpl_options', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY)) {
+        //             update_option('gncpl_options', $gncpl_options);
+        //         } else {
+        //             update_option('gncpl_options', '');
+        //         }
+        //         wp_safe_redirect(menu_page_url('gncpl-page', false));
+        //     }
+        // }
     }
         
     function add_column_name($columns)
@@ -152,8 +154,27 @@ class Gn_customize_post_list
 
         if (isset($this->gncpl_options[$post_type])) {
             $new_array = $this->default_column;
+            $count = 0;
             foreach ($this->gncpl_options[$post_type] as $item) {
-                $new_array[$item] = $this->select_options[$item];
+                $name = $item['key'];
+                switch ($name) {
+                    case 'custom_field';
+                        $new_array['custom_field_val_'. $item['value']] = 'カスタムフィールド';
+                        break;
+                    case 'taxonomy';
+                        $new_array['taxonomy_val_'. $item['value']] = 'タクソノミー';                        
+                    case 'title':
+                        $new_array['title'] = 'タイトル';
+                        break;
+                    case 'date':
+                        $new_array['date'] = '日時';
+                        break;
+                    case 'content':               
+                        $new_array['content'] = '本文';
+                        break;
+                    default:
+                        break;
+                }
             }
             $columns = $new_array;
         }
@@ -164,6 +185,8 @@ class Gn_customize_post_list
     function add_column_value($column_name, $post_id)
     { // 列に値を表示
         global $post;
+        
+        var_dump(get_field_object('name'));
         $post_type = get_post_type($post);
         switch ($column_name) {
             case 'content':
@@ -172,8 +195,8 @@ class Gn_customize_post_list
                 echo $content;
                 break;
             
-            case 'custom_field':
-                echo get_post_field('名前', $post_id);
+            case 'custom_field_':
+                echo get_post_field('name', $post_id);
                 // $taxonomy =
         }
         if ($column_name == $post_type) {
