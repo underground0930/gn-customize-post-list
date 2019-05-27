@@ -61,10 +61,21 @@ class Gn_customize_post_list
         register_activation_hook(__FILE__, array($this, 'activationHook'));
         // プラグイン無効化された時の処理
         register_deactivation_hook(__FILE__, array($this, 'deactivationHook'));
+        
+        add_action('wp_ajax_abcde', array($this, 'my_action_callback'));
 
     }
 
-
+    public function my_action_callback(){
+        if(isset($_POST['gncpl_options']) && check_ajax_referer( 'gncpl_nonce', 'security' )){
+            update_option('gncpl_options', ($_POST['gncpl_options']));
+            // update_option('gncpl_options', $arr);
+            exit;
+        }
+        echo 'ERROR';
+        exit;
+    }
+    
     public function admin_script()
     {
         wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', [ 'wp-element' ], '1.0.0', true);
@@ -106,6 +117,7 @@ class Gn_customize_post_list
         echo 'var admin_ajax_url  = "' . admin_url('admin-ajax.php', __FILE__) . '";';
         echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';        
         echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';';
+        echo 'var security = "' . wp_create_nonce('gncpl_nonce') . '";';
         ?>
     </script>
 
@@ -113,7 +125,7 @@ class Gn_customize_post_list
     <p class="gncpl-admin-text"><b>各一覧画面をカスタマイズします</b></p>
     <?php wp_nonce_field('nonce-key', 'gncpl-page'); ?>
     <div id="gncpl-admin-app"></div>
-    <p><input type='submit' value="save" class="button button-primary button-large"></p>
+    <!-- <p><input type='submit' value="save" class="button button-primary button-large"></p> -->
 </div>
 <?php
     }
