@@ -25,13 +25,6 @@ class Gn_customize_post_list
 {
     private $post_types;
     private $gncpl_options;
-    private $select_options = array(
-      'title' => 'タイトル',
-      'content' => '本文',
-      'custom_field' => 'カスタムフィールド',
-      'taxonomy' => 'タクソノミー',
-      'date' => '日時',
-    );
     private $default_column = array(
         'cb'    => '<input type="checkbox" />',
     );
@@ -133,18 +126,7 @@ class Gn_customize_post_list
     }
         
     function admin_init()
-    {
-        // if (filter_input(INPUT_POST, 'gncpl-page')) {
-        //     if (check_admin_referer('nonce-key', 'gncpl-page')) {
-        //         if ($gncpl_options = filter_input(INPUT_POST, 'gncpl_options', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY)) {
-        //             update_option('gncpl_options', $gncpl_options);
-        //         } else {
-        //             update_option('gncpl_options', '');
-        //         }
-        //         wp_safe_redirect(menu_page_url('gncpl-page', false));
-        //     }
-        // }
-    }
+    {}
         
     function add_column_name($columns)
     { // 一覧に列を追加
@@ -159,10 +141,10 @@ class Gn_customize_post_list
                 $name = $item['key'];
                 switch ($name) {
                     case 'custom_field';
-                        $new_array['custom_field_val_'. $item['value']] = 'カスタムフィールド';
+                        $new_array['custom_field_val_'. $item['value']] = $item['label'];
                         break;
                     case 'taxonomy';
-                        $new_array['taxonomy_val_'. $item['value']] = 'タクソノミー';                        
+                        $new_array['taxonomy_val_'. $item['value']] = $item['label'];                        
                     case 'title':
                         $new_array['title'] = 'タイトル';
                         break;
@@ -186,36 +168,47 @@ class Gn_customize_post_list
     { // 列に値を表示
         global $post;
         
-        var_dump(get_field_object('name'));
+        $result_name = $column_name;
+        $result_val = '';
+        
+        if(strpos($result_name, 'custom_field_val_') !== false){
+            $result_val = substr($result_name, mb_strlen('custom_field_val_'));
+            $result_name = 'custom_field';
+        }elseif(strpos($result_name, 'taxonomy_val_') !== false){
+            $result_val = substr($result_name, mb_strlen('taxonomy_val_'));            
+            $result_name = 'taxonomy';
+        }
+
         $post_type = get_post_type($post);
-        switch ($column_name) {
+        switch ($result_name) {
             case 'content':
                 $content = strip_tags(get_post_field('post_content', $post_id));
-                $content = mb_strlen($content) > 20 ? mb_substr($content, 0, 20, 'UTF-8') . '...' : $content;
+                $content = mb_strlen($content) > 30 ? mb_substr($content, 0, 20, 'UTF-8') . '...' : $content;
                 echo $content;
                 break;
             
-            case 'custom_field_':
-                echo get_post_field('name', $post_id);
-                // $taxonomy =
-        }
-        if ($column_name == $post_type) {
-            if ($post_type == 'post') {
-                $current_term = get_the_terms($post_id, 'category');
-                if (isset($current_term)) {
+            case 'custom_field':
+                echo get_post_field($result_val, $post_id);
+                break;
+                
+            case 'taxonomy':
+                $current_term = get_the_terms($post_id, $result_val);
+                if ($current_term) {
                     foreach ($current_term as $term) {
-                        echo "<a href='${admin_url()}edit.php?category_name={$term->slug}&post_type={$post_type}'>{$term->name}!</a>";
+                        if($post_type === 'post' && $result_val === 'category'){
+                            echo "<a href='${admin_url()}edit.php?category_name={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
+                        }elseif($post_type === 'post' && $result_val === 'post_tag'){
+                            echo "<a href='${admin_url()}edit.php?tag={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
+                        }else{
+                            echo "<a href='${admin_url()}edit.php?{$result_val}={$term->slug}&post_type={$post_type}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');                          
+                        }
                     }
                 }
-            } else {
-                $current_term = get_the_terms($post_id, 'category_' . $post_type);
-                if (isset($current_term)) {
-                    foreach ($current_term as $term) {
-                        echo "<a href='${admin_url()}edit.php?category_news={$term->slug}&post_type={$post_type}'>{$term->name}</a>" . ($term !== end($current_term) ? ',' : '');
-                    }
-                }
-            }
+                break;
+            default:
+                break;
         }
+
     }
 
     /**

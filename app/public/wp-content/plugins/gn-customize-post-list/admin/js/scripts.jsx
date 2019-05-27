@@ -24,7 +24,7 @@ const DEFAULT_OPTIONS = [
     value: null
   }
 ];
-const SELECT_MAX_LENGTH = 5;
+const SELECT_MAX_LENGTH = 6;
 
 class App extends Component {
   constructor() {
@@ -178,7 +178,7 @@ class App extends Component {
                               />
                               </div>
                               <div>         
-                              <b>val : </b>
+                              <b>slug : </b>
                               <input
                                 className="gncpl-admin-input"
                                 type="text"
