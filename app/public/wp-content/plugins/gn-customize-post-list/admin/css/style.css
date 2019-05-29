@@ -3,6 +3,18 @@
   font-size:30px;
   font-weight: bold;
 }
+.gncpl-root{
+  position: relative;
+}
+.gncpl-admin-loading{
+  position: fixed;
+  left:0;
+  top:0;
+  z-index:1000;
+  background:rgba(0,0,0,0.4);
+  width:100%;
+  height:100%;
+}
 
 .gncpl-admin-errorTitle{
   font-size:16px;
@@ -32,9 +44,7 @@
 .gncpl-admin-listChild{
   margin: 0 15px 0 0;
 }
-.gncpl-admin-listAdd{
-  
-}
+
 .gncpl-admin-litDeleteWrap{
   text-align:right;
   margin: 0 5px 0 !important;
@@ -47,4 +57,52 @@
 }
 .gncpl-admin-input{
   width:100px;
+}
+
+
+
+.gncpl-admin-loadingObj,
+.gncpl-admin-loadingObj:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+.gncpl-admin-loadingObj {
+  position: absolute;
+  left:0;
+  right:0;
+  top:0;
+  bottom:0;
+  margin: auto;
+  font-size: 10px;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-left: 1.1em solid #ffffff;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }

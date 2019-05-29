@@ -1,13 +1,14 @@
-import{ Component, Fragment } from 'react';
-import {render} from 'react-dom';
+import { Component, Fragment } from 'react';
+import ReactDOM from 'react-dom';
 import '../css/style.css';
 import deepcopy from 'deepcopy';
 import axios from 'axios';
 import qs from 'qs';
-import jump from 'jump.js'
+import jump from 'jump.js';
 
 // component
 import ErrorTitle from './component/ErrorTitle';
+import Loading from './component/Loading';
 
 // script
 const OPTIONS = [
@@ -32,6 +33,10 @@ const DEFAULT_OPTIONS = [
 ];
 const SELECT_MAX_LENGTH = 6;
 
+let root = document.createElement('div');
+root.classList.add('gncpl-root');
+document.body.appendChild(root);
+
 class App extends Component {
   constructor() {
     super();
@@ -42,7 +47,8 @@ class App extends Component {
         title: '',
         className: '',
         list: []
-      }
+      },
+      loading: false
     };
     this.addColumn = this.addColumn.bind(this);
     this.deleteColumn = this.deleteColumn.bind(this);
@@ -63,17 +69,19 @@ class App extends Component {
       }
     });
     this.setState(prevState => {
-      return { options: Object.assign({}, prevState.options, newOptions) };
+      return {
+        options: Object.assign({}, prevState.options, newOptions)
+      };
     });
   }
   addColumn(type) {
     if (this.state.options[type].length >= SELECT_MAX_LENGTH) return;
-    this.setState( prevState =>{
-      prevState.options[type].push({...DEFAULT_OPTION})
+    this.setState(prevState => {
+      prevState.options[type].push({ ...DEFAULT_OPTION });
       return {
         options: prevState.options
-      }
-    })
+      };
+    });
   }
   deleteColumn(type, i) {
     this.setState(prevState => {
@@ -83,7 +91,7 @@ class App extends Component {
       };
     });
   }
-  updateText(which , e, type, i) {
+  updateText(which, e, type, i) {
     const value = e.target.value;
     this.setState(prevState => {
       prevState.options[type][i][which] = value;
@@ -118,56 +126,63 @@ class App extends Component {
   }
   updateOptions() {
     const data = {
-        action: 'update_gncpl_options',
-        security: window.security,
-        gncpl_options: this.state.options
-      };
-
+      action: 'update_gncpl_options',
+      security: window.security,
+      gncpl_options: this.state.options
+    };
     const options = {
       method: 'POST',
       data: qs.stringify(data),
-      url : window.admin_ajax_url
-    }
+      url: window.admin_ajax_url
+    };
+    const interval = 500;
+
+    this.setState({
+      loading: true
+    });
 
     axios(options)
-    .then( response =>{
-      console.log(response);
-      const {data} = response;
-      let errors = {}
-      if(typeof data === "object"){
-        errors = {
-          title: '入力データに不備があります',
-          className: 'is-error',
-          list: data
+      .then(response => {
+        console.log(response);
+        const { data } = response;
+        let errors = {};
+        if (typeof data === 'object') {
+          errors = {
+            title: '入力データに不備があります',
+            className: 'is-error',
+            list: data
+          };
+        } else if (data === 'security') {
+          errors = {
+            title: '不正な操作がありました',
+            className: 'is-error',
+            list: []
+          };
+        } else {
+          errors = {
+            title: 'データを更新しました',
+            className: 'is-success',
+            list: []
+          };
         }
-      }else if(data === 'security'){
-        errors = {
-          title: '不正な操作がありました',
-          className: 'is-error',
-          list: []
-        }
-      }else{
-        errors = {
-          title: 'データを更新しました',
-          className: 'is-success',
-          list: []
-        }        
-      }
-      this.setState({errors},()=>{
-        jump('.gncpl-admin-title',{
-          duration: 300,
-          offset: -100
-        });
+        setTimeout(() => {
+          this.setState({ errors, loading: false }, () => {
+            jump('.gncpl-admin-title', {
+              duration: 300,
+              offset: -100
+            });
+          });
+        }, interval);
+      })
+      .catch(error => {
+        alert('データの更新に失敗しました');
+        console.log(error);
       });
-    })
-    .catch( error => {
-      alert('データの更新に失敗しました');
-      console.log(error);
-    });
   }
   render() {
     return (
       <Fragment>
+        {this.state.loading && <Loading />}
         {this.state.errors.title && <ErrorTitle errors={this.state.errors} />}
         {this.state.types.map(type => (
           <section className="gncpl-admin-section" key={type.name}>
@@ -193,35 +208,35 @@ class App extends Component {
                           );
                         })}
                       </select>
-                      
+
                       {(() => {
                         if (this.checkSelectType(v.key)) {
                           return (
                             <Fragment>
-                            <div>
-                              <b>label : </b>
-                              <input
-                                className="gncpl-admin-input"
-                                type="text"
-                                value={v.label}
-                                placeholder="please input label"
-                                onChange={e => {
-                                  this.updateText('label', e, type.name, i);
-                                }}
-                              />
+                              <div>
+                                <b>label : </b>
+                                <input
+                                  className="gncpl-admin-input"
+                                  type="text"
+                                  value={v.label}
+                                  placeholder="please input label"
+                                  onChange={e => {
+                                    this.updateText('label', e, type.name, i);
+                                  }}
+                                />
                               </div>
-                              <div>         
-                              <b>slug : </b>
-                              <input
-                                className="gncpl-admin-input"
-                                type="text"
-                                value={v.value}
-                                placeholder="please input slug"
-                                onChange={e => {
-                                  this.updateText('value', e, type.name, i);
-                                }}
-                              />
-                            </div>
+                              <div>
+                                <b>slug : </b>
+                                <input
+                                  className="gncpl-admin-input"
+                                  type="text"
+                                  value={v.value}
+                                  placeholder="please input slug"
+                                  onChange={e => {
+                                    this.updateText('value', e, type.name, i);
+                                  }}
+                                />
+                              </div>
                             </Fragment>
                           );
                         }
@@ -261,10 +276,15 @@ class App extends Component {
             </button>
           </section>
         ))}
-        <input className="gncpl-admin-submit gncpl-admin-btn button button button-primary button-large" type="submit" value="update" onClick={this.updateOptions} />
+        <input
+          className="gncpl-admin-submit gncpl-admin-btn button button button-primary button-large"
+          type="submit"
+          value="update"
+          onClick={this.updateOptions}
+        />
       </Fragment>
     );
   }
 }
 
-render(<App />, document.getElementById('gncpl-admin-app'));
+ReactDOM.render(<App />, document.getElementById('gncpl-admin-app'));
