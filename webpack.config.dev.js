@@ -1,13 +1,12 @@
-import path from 'path';
+const path = require('path');
 
-const src = path.resolve(
-  __dirname,
-  'app/public/wp-content/plugins/gn-customize-post-list/admin/js/'
-);
+const packageJson = require('./package');
+const src = path.resolve(__dirname, packageJson.jsFilePath);
 
-export default {
+module.exports = {
   mode: 'development',
   entry: src + '/scripts.jsx',
+  devtool: 'inline-source-map',
   watch: true,
   output: {
     path: src,
