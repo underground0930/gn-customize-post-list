@@ -1,10 +1,17 @@
 
+.gncpl-root{
+  position: relative;
+}
 .gncpl-admin-title{
   font-size:30px;
   font-weight: bold;
+  margin-bottom:45px;
 }
-.gncpl-root{
-  position: relative;
+.gncpl-admin-postType{
+  line-height: 1;
+}
+.gncpl-admin-postType span{
+  font-size:16px; 
 }
 .gncpl-admin-loading{
   position: fixed;
@@ -15,7 +22,6 @@
   width:100%;
   height:100%;
 }
-
 .gncpl-admin-errorTitle{
   font-size:16px;
   font-weight: bold;
@@ -23,20 +29,22 @@
   background: #fff;
   margin: 0 0 30px;
 }
-
 .gncpl-admin-errorTitle.is-error{
   border-left: #f00 5px solid;
 }
-
 .gncpl-admin-errorTitle.is-success{
   border-left: #0f0 5px solid;
 }
-
 .gncpl-admin-section{
   margin: 0 0 20px;
   padding: 0 0 20px;
   border-bottom:1px solid #ccc;
+
 }
+.gncpl-admin-section:nth-of-type(1){
+  border-top:1px solid #ccc;    
+}
+
 .gncpl-admin-list{
   display:flex;
   margin-top:0;
@@ -44,7 +52,6 @@
 .gncpl-admin-listChild{
   margin: 0 15px 0 0;
 }
-
 .gncpl-admin-litDeleteWrap{
   text-align:right;
   margin: 0 5px 0 !important;
@@ -58,8 +65,6 @@
 .gncpl-admin-input{
   width:100px;
 }
-
-
 
 .gncpl-admin-loadingObj,
 .gncpl-admin-loadingObj:after {

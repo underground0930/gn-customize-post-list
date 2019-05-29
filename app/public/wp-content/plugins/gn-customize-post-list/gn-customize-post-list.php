@@ -47,20 +47,12 @@ class Gn_customize_post_list
         add_action('manage_posts_custom_column', array($this, 'add_column_value'), 10, 2);
         add_action('restrict_manage_posts', array($this, 'add_custom_taxonomies_term_filter'));
 
-        add_action('admin_print_styles', array( $this, 'admin_css'));
-        add_action('admin_print_scripts', array( $this, 'admin_script'));
-
-        add_action('admin_init', array($this, 'admin_init'));
+        add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME , array( $this, 'admin_script'));
                 
         register_activation_hook(__FILE__, array($this, 'activationHook')); // プラグイン有効化された時の処理
         register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // プラグイン無効化された時の処理
         
         add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajaxのコールバック
-    }
-
-    function cutText($text,$length,$last=""){
-        $t = strip_tags($text);
-        return mb_strimwidth($t, 0, $length, $last);
     }
 
     function check_length($text, $len){
@@ -73,7 +65,11 @@ class Gn_customize_post_list
         $error = new WP_Error();
         $error_flag = false;
         $error_arr = array();
-    
+        $error_texts = array(
+            'over' => 'labelとvalueの値は' . INPUT_MAX_LENGTH . '文字以内にしてください。',
+            'duplicate' => '重複した項目を使用しています。'
+        );
+        
 
         if (isset($options) && check_ajax_referer('gncpl_nonce', 'security')) {
             $i = 0;
@@ -89,12 +85,12 @@ class Gn_customize_post_list
 
                             if( $this->check_length( $option_child['label'], INPUT_MAX_LENGTH ) || $this->check_length( $option_child['value'], INPUT_MAX_LENGTH ) ){
 
-                                $error_arr[$i][$j] = 'labelとvalueの値は' . INPUT_MAX_LENGTH . '文字以内にしてください。';
+                                $error_arr[$i][$j] = $error_texts['over'];
                                 $error_flag = true;
 
                             }elseif( array_count_values($duplicate_arr)['custom_field_' . $option_child['value']] > 1 ){
 
-                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_arr[$i][$j] = $error_texts['duplicate'];
                                 $error_flag = true;
 
                             }else{
@@ -111,12 +107,12 @@ class Gn_customize_post_list
                             array_push($duplicate_arr, 'taxonomy_' . $option_child['value']);
 
                             if( $this->check_length( $option_child['label'], INPUT_MAX_LENGTH ) || $this->check_length( $option_child['value'], INPUT_MAX_LENGTH ) ){
-                                $error_arr[$i][$j] = 'labelとvalueの値は' . INPUT_MAX_LENGTH . '文字以内にしてください。';
+                                $error_arr[$i][$j] = $error_texts['over'];
                                 $error_flag = true;
 
                             }elseif( array_count_values($duplicate_arr)['taxonomy_' . $option_child['value']] > 1 ){
 
-                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_arr[$i][$j] = $error_texts['duplicate'];
                                 $error_flag = true;
 
                             }else{
@@ -134,7 +130,7 @@ class Gn_customize_post_list
                             
                             if( array_count_values($duplicate_arr)['title'] > 1 ){
 
-                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_arr[$i][$j] = $error_texts['duplicate'];
                                 $error_flag = true;
 
                             }else{
@@ -153,7 +149,7 @@ class Gn_customize_post_list
                             
                             if( array_count_values($duplicate_arr)[ 'date'] > 1 ){
 
-                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_arr[$i][$j] = $error_texts['duplicate'];
                                 $error_flag = true;
 
                             }else{
@@ -172,7 +168,7 @@ class Gn_customize_post_list
                             
                             if( array_count_values($duplicate_arr)[ 'content'] > 1 ){
 
-                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_arr[$i][$j] = $error_texts['duplicate'];
                                 $error_flag = true;
 
                             }else{
@@ -206,18 +202,14 @@ class Gn_customize_post_list
         exit;
     }
     
-    public function admin_script()
+    function admin_script()
     {
-        wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', [ 'wp-element' ], '1.0.0', true);
-    }
-    public function admin_css()
-    {
-        // wp_enqueue_style('gncpl_css', GNCPL_PLUGIN_URL . '/admin/css/style.css');
+        wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', array(), '1.0.0', true);
     }
 
-    public function add_admin_menu()
+    function add_admin_menu()
     {
-        add_options_page(
+        $result = add_options_page(
             __('GN Customize Post List', 'gn-customize-post-list'),
             __('GN Customize Post List', 'gn-customize-post-list'),
             'administrator',
@@ -228,38 +220,13 @@ class Gn_customize_post_list
         );
     }
     
-    public function custom_admin()
+    function custom_admin()
     {
-        $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object')); ?>
-<div class="gncpl-admin-wrap">
-    <script>
-        <?php
-        $post_types_array = array();
-        
-        foreach ($this->post_types as $post_type) {
-            array_push($post_types_array, array(
-                'name' => $post_type->name,
-                'label' => $post_type->label,
-            ));
-        }
-                    
-        echo 'var admin_ajax_url  = "' . admin_url('admin-ajax.php', __FILE__) . '";';
-        echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';
-        echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';';
-        echo 'var security = "' . wp_create_nonce('gncpl_nonce') . '";'; ?>
-    </script>
-    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?></h2>
-    <div id="gncpl-admin-app"></div>
-</div>
-<?php
+        include_once('includes/admin-view.php');
     }
-        
-    public function admin_init()
-    {
-    }
-        
-    public function add_column_name($columns)
-    { // 一覧に列を追加
+                
+    function add_column_name($columns)
+    { 
 
         global $post;
         $post_type = get_post_type($post);
@@ -295,8 +262,8 @@ class Gn_customize_post_list
         return $columns;
     }
     
-    public function add_column_value($column_name, $post_id)
-    { // 列に値を表示
+    function add_column_value($column_name, $post_id)
+    { 
         global $post;
         
         $result_name = $column_name;
@@ -345,7 +312,7 @@ class Gn_customize_post_list
      * 管理画面の投稿一覧にカスタムフィールドの絞り込み選択機能を追加します。
      */
 
-    public function add_custom_taxonomies_term_filter()
+    function add_custom_taxonomies_term_filter()
     {
         global $post_type;
         $taxonomies = get_taxonomies(array( 'object_type' => array( $post_type ), '_builtin' => false ), 'object');
@@ -363,13 +330,13 @@ class Gn_customize_post_list
             ));
         }
     }
-    public function activationHook()
+    function activationHook()
     {
         if (!get_option('gncpl_options')) {
             update_option('gncpl_options', array());
         }
     }
-    public function deactivationHook()
+    function deactivationHook()
     {
         delete_option('gncpl_options');
     }

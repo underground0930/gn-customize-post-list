@@ -1,4 +1,4 @@
-import{ Component } from 'react';
+import React from 'react';
 
 const ErrorText = (props) => {
   const {title, className} = props.errors;

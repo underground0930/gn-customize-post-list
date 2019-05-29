@@ -1,4 +1,4 @@
-import { Component, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import '../css/style.css';
 import deepcopy from 'deepcopy';
@@ -143,7 +143,6 @@ class App extends Component {
 
     axios(options)
       .then(response => {
-        console.log(response);
         const { data } = response;
         let errors = {};
         if (typeof data === 'object') {
@@ -166,18 +165,28 @@ class App extends Component {
           };
         }
         setTimeout(() => {
-          this.setState({ errors, loading: false }, () => {
-            jump('.gncpl-admin-title', {
-              duration: 300,
-              offset: -100
-            });
-          });
+          this.setState({ errors, loading: false }, this.scrollTop);
         }, interval);
       })
       .catch(error => {
-        alert('データの更新に失敗しました');
-        console.log(error);
+        this.setState(
+          {
+            errors: {
+              title: 'データの更新に失敗しました',
+              className: 'is-success',
+              list: []
+            },
+            loading: false
+          },
+          this.scrollTop
+        );
       });
+  }
+  scrollTop() {
+    jump('.gncpl-admin-title', {
+      duration: 300,
+      offset: -100
+    });
   }
   render() {
     return (
@@ -186,7 +195,9 @@ class App extends Component {
         {this.state.errors.title && <ErrorTitle errors={this.state.errors} />}
         {this.state.types.map(type => (
           <section className="gncpl-admin-section" key={type.name}>
-            <h4>【POST TYPE : {type.label}】</h4>
+            <h4 className="gncpl-admin-postType">
+              ■post type : <span>[{type.label}]</span>
+            </h4>
             <ul className="gncpl-admin-list">
               {this.state.options[type.name] &&
                 this.state.options[type.name].map((v, i) => {
