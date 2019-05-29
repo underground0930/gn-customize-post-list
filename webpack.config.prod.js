@@ -5,7 +5,7 @@ const src = path.resolve(__dirname, packageJson.jsFilePath);
 
 module.exports = {
   mode: 'production',
-  entry: src + '/scripts.jsx',
+  entry: src + '/App.jsx',
   output: {
     path: src,
     filename: 'scripts.js'

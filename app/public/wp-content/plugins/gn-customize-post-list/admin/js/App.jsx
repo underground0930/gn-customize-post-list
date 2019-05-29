@@ -4,7 +4,12 @@ import '../css/style.css';
 import deepcopy from 'deepcopy';
 import axios from 'axios';
 import qs from 'qs';
+import jump from 'jump.js'
 
+// component
+import ErrorTitle from './component/ErrorTitle';
+
+// script
 const OPTIONS = [
   { key: 'title', label: 'title' },
   { key: 'content', label: 'content' },
@@ -32,7 +37,12 @@ class App extends Component {
     super();
     this.state = {
       types: window.gncpl_admin_post_types,
-      options: window.gncpl_admin_options
+      options: window.gncpl_admin_options,
+      errors: {
+        title: '',
+        className: '',
+        list: []
+      }
     };
     this.addColumn = this.addColumn.bind(this);
     this.deleteColumn = this.deleteColumn.bind(this);
@@ -120,18 +130,45 @@ class App extends Component {
     }
 
     axios(options)
-    .then(function (response) {
+    .then( response =>{
       console.log(response);
-      alert('データを更新しました');
+      const {data} = response;
+      let errors = {}
+      if(typeof data === "object"){
+        errors = {
+          title: '入力データに不備があります',
+          className: 'is-error',
+          list: data
+        }
+      }else if(data === 'security'){
+        errors = {
+          title: '不正な操作がありました',
+          className: 'is-error',
+          list: []
+        }
+      }else{
+        errors = {
+          title: 'データを更新しました',
+          className: 'is-success',
+          list: []
+        }        
+      }
+      this.setState({errors},()=>{
+        jump('.gncpl-admin-title',{
+          duration: 300,
+          offset: -100
+        });
+      });
     })
-    .catch(function (error) {
-      console.log(error);
+    .catch( error => {
       alert('データの更新に失敗しました');
+      console.log(error);
     });
   }
   render() {
     return (
       <Fragment>
+        {this.state.errors.title && <ErrorTitle errors={this.state.errors} />}
         {this.state.types.map(type => (
           <section className="gncpl-admin-section" key={type.name}>
             <h4>【POST TYPE : {type.label}】</h4>
@@ -205,7 +242,7 @@ class App extends Component {
                 })}
             </ul>
             <button
-              class="gncpl-admin-listAdd gncpl-admin-btn button button-primary button-large"
+              className="gncpl-admin-listAdd gncpl-admin-btn button button-primary button-large"
               onClick={e => {
                 e.preventDefault();
                 this.addColumn(type.name);
@@ -214,7 +251,7 @@ class App extends Component {
               add row
             </button>
             <button
-              class="gncpl-admin-listReset gncpl-admin-btn button button button-primary button-large"
+              className="gncpl-admin-listReset gncpl-admin-btn button button button-primary button-large"
               onClick={e => {
                 e.preventDefault();
                 this.resetSelect(type.name);

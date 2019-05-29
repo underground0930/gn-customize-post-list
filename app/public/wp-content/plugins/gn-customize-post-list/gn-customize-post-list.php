@@ -21,6 +21,8 @@ define('GNCPL_PLUGIN_NAME', trim(dirname(GNCPL_PLUGIN_BASENAME), '/'));
 define('GNCPL_PLUGIN_DIR', untrailingslashit(dirname(__FILE__)));
 define('GNCPL_PLUGIN_URL', untrailingslashit(plugins_url('', __FILE__)));
 
+define('INPUT_MAX_LENGTH', 30);
+
 class Gn_customize_post_list
 {
     private $post_types;
@@ -49,51 +51,156 @@ class Gn_customize_post_list
         add_action('admin_print_scripts', array( $this, 'admin_script'));
 
         add_action('admin_init', array($this, 'admin_init'));
+                
+        register_activation_hook(__FILE__, array($this, 'activationHook')); // プラグイン有効化された時の処理
+        register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // プラグイン無効化された時の処理
         
-        // プラグイン有効化された時の処理
-        register_activation_hook(__FILE__, array($this, 'activationHook'));
-        // プラグイン無効化された時の処理
-        register_deactivation_hook(__FILE__, array($this, 'deactivationHook'));
-        
-        add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback'));
+        add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajaxのコールバック
     }
 
-    public function ajax_update_callback()
+    function cutText($text,$length,$last=""){
+        $t = strip_tags($text);
+        return mb_strimwidth($t, 0, $length, $last);
+    }
+
+    function check_length($text, $len){
+        return mb_strlen($text) > $len ? true : false;
+    }
+
+    function ajax_update_callback()
     {
+        $options = $_POST['gncpl_options'];                
         $error = new WP_Error();
-        $options = $_POST['gncpl_options'];
+        $error_flag = false;
+        $error_arr = array();
+    
 
         if (isset($options) && check_ajax_referer('gncpl_nonce', 'security')) {
-
-            foreach($options as $option){
-                foreach($option as $option_child){
-
+            $i = 0;
+            foreach ($options as $option) {
+                $j = 0;
+                $duplicate_arr = array();
+                foreach ($option as $option_child) {
                     switch ($option_child['key']) {
+
                         case 'custom_field':
+
+                            array_push($duplicate_arr, 'custom_field_' . $option_child['value']);
+
+                            if( $this->check_length( $option_child['label'], INPUT_MAX_LENGTH ) || $this->check_length( $option_child['value'], INPUT_MAX_LENGTH ) ){
+
+                                $error_arr[$i][$j] = 'labelとvalueの値は' . INPUT_MAX_LENGTH . '文字以内にしてください。';
+                                $error_flag = true;
+
+                            }elseif( array_count_values($duplicate_arr)['custom_field_' . $option_child['value']] > 1 ){
+
+                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_flag = true;
+
+                            }else{
+                                $option_child = array(
+                                    'key' => 'custom_field',
+                                    'label' => $option_child['label'],
+                                    'value' => $option_child['value'],
+                                );
+                            }
                             break;
+
                         case 'taxonomy':
+
+                            array_push($duplicate_arr, 'taxonomy_' . $option_child['value']);
+
+                            if( $this->check_length( $option_child['label'], INPUT_MAX_LENGTH ) || $this->check_length( $option_child['value'], INPUT_MAX_LENGTH ) ){
+                                $error_arr[$i][$j] = 'labelとvalueの値は' . INPUT_MAX_LENGTH . '文字以内にしてください。';
+                                $error_flag = true;
+
+                            }elseif( array_count_values($duplicate_arr)['taxonomy_' . $option_child['value']] > 1 ){
+
+                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_flag = true;
+
+                            }else{
+                                $option_child = array(
+                                    'key' => 'taxonomy',
+                                    'label' => $option_child['label'],
+                                    'value' => $option_child['value'],
+                                );
+                            }
                             break;
+
                         case 'title':
+
+                            array_push($duplicate_arr, 'title');
+                            
+                            if( array_count_values($duplicate_arr)['title'] > 1 ){
+
+                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_flag = true;
+
+                            }else{
+                                $option_child = array(
+                                    'key' => 'title',
+                                    'label' => null,
+                                    'value' => null,
+                                );                                
+                            }
+
                             break;
+
                         case 'date':
+
+                            array_push($duplicate_arr, 'date');
+                            
+                            if( array_count_values($duplicate_arr)[ 'date'] > 1 ){
+
+                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_flag = true;
+
+                            }else{
+                                $option_child = array(
+                                    'key' => 'date',
+                                    'label' => null,
+                                    'value' => null,
+                                );                                
+                            }
+
                             break;
+
                         case 'content':
-                            break;
+
+                            array_push($duplicate_arr, 'content');
+                            
+                            if( array_count_values($duplicate_arr)[ 'content'] > 1 ){
+
+                                $error_arr[$i][$j] = '重複した項目を使用しています。';
+                                $error_flag = true;
+
+                            }else{
+                                $option_child = array(
+                                    'key' => 'content',
+                                    'label' => null,
+                                    'value' => null,
+                                );                                
+                            }
+
                         default:
-                            // 不正な値 エラー
+                            unset($option_child);
                             break;
                     }
-                    
-                }                
+                    $j++;
+                }
+                $i++;
             }
 
-
-            update_option('gncpl_options', $options);
-            $error->add('200', 'success');
-
+            if($error_flag){
+                $error->add('101', json_encode($error_arr)); 
+            }else{
+                update_option('gncpl_options', $options);
+                $error->add('200', '');
+            }
 
         } else {
-            $error->add('100', 'security error');
+            $error->add('100', 'security');
         }
         echo $error->get_error_message();
         exit;
@@ -141,10 +248,7 @@ class Gn_customize_post_list
         echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';';
         echo 'var security = "' . wp_create_nonce('gncpl_nonce') . '";'; ?>
     </script>
-
-    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?>
-    </h2>
-    <?php wp_nonce_field('nonce-key', 'gncpl-page'); ?>
+    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?></h2>
     <div id="gncpl-admin-app"></div>
 </div>
 <?php
@@ -167,10 +271,10 @@ class Gn_customize_post_list
                 $name = $item['key'];
                 switch ($name) {
                     case 'custom_field':
-                        $new_array['custom_field_val_'. $item['value']] = esc_html( $item['label'] );
+                        $new_array['custom_field_val_'. $item['value']] = esc_html($item['label']);
                         break;
                     case 'taxonomy':
-                        $new_array['taxonomy_val_'. $item['value']] = esc_html( $item['label'] );
+                        $new_array['taxonomy_val_'. $item['value']] = esc_html($item['label']);
                         break;
                     case 'title':
                         $new_array['title'] = 'タイトル';

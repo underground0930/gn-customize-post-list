@@ -5,7 +5,7 @@ const src = path.resolve(__dirname, packageJson.jsFilePath);
 
 module.exports = {
   mode: 'development',
-  entry: src + '/scripts.jsx',
+  entry: src + '/App.jsx',
   devtool: 'inline-source-map',
   watch: true,
   output: {
