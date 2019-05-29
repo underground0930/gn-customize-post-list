@@ -56,18 +56,43 @@ class Gn_customize_post_list
         register_deactivation_hook(__FILE__, array($this, 'deactivationHook'));
         
         add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback'));
-
     }
 
-    public function ajax_update_callback(){
-
+    public function ajax_update_callback()
+    {
         $error = new WP_Error();
         $options = $_POST['gncpl_options'];
 
-        if(isset($options) && check_ajax_referer( 'gncpl_nonce', 'security' )){
+        if (isset($options) && check_ajax_referer('gncpl_nonce', 'security')) {
+
+            foreach($options as $option){
+                foreach($option as $option_child){
+
+                    switch ($option_child['key']) {
+                        case 'custom_field':
+                            break;
+                        case 'taxonomy':
+                            break;
+                        case 'title':
+                            break;
+                        case 'date':
+                            break;
+                        case 'content':
+                            break;
+                        default:
+                            // 不正な値 エラー
+                            break;
+                    }
+                    
+                }                
+            }
+
+
             update_option('gncpl_options', $options);
             $error->add('200', 'success');
-        }else{
+
+
+        } else {
             $error->add('100', 'security error');
         }
         echo $error->get_error_message();
@@ -112,23 +137,24 @@ class Gn_customize_post_list
         }
                     
         echo 'var admin_ajax_url  = "' . admin_url('admin-ajax.php', __FILE__) . '";';
-        echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';        
+        echo 'var gncpl_admin_post_types = '. json_encode($post_types_array) . ';';
         echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';';
-        echo 'var security = "' . wp_create_nonce('gncpl_nonce') . '";';
-        ?>
+        echo 'var security = "' . wp_create_nonce('gncpl_nonce') . '";'; ?>
     </script>
 
-    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?></h2>    
+    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?>
+    </h2>
     <?php wp_nonce_field('nonce-key', 'gncpl-page'); ?>
     <div id="gncpl-admin-app"></div>
 </div>
 <?php
     }
         
-    function admin_init()
-    {}
+    public function admin_init()
+    {
+    }
         
-    function add_column_name($columns)
+    public function add_column_name($columns)
     { // 一覧に列を追加
 
         global $post;
@@ -140,18 +166,19 @@ class Gn_customize_post_list
             foreach ($this->gncpl_options[$post_type] as $item) {
                 $name = $item['key'];
                 switch ($name) {
-                    case 'custom_field';
-                        $new_array['custom_field_val_'. $item['value']] = $item['label'];
+                    case 'custom_field':
+                        $new_array['custom_field_val_'. $item['value']] = esc_html( $item['label'] );
                         break;
-                    case 'taxonomy';
-                        $new_array['taxonomy_val_'. $item['value']] = $item['label'];                        
+                    case 'taxonomy':
+                        $new_array['taxonomy_val_'. $item['value']] = esc_html( $item['label'] );
+                        break;
                     case 'title':
                         $new_array['title'] = 'タイトル';
                         break;
                     case 'date':
                         $new_array['date'] = '日時';
                         break;
-                    case 'content':               
+                    case 'content':
                         $new_array['content'] = '本文';
                         break;
                     default:
@@ -164,18 +191,18 @@ class Gn_customize_post_list
         return $columns;
     }
     
-    function add_column_value($column_name, $post_id)
+    public function add_column_value($column_name, $post_id)
     { // 列に値を表示
         global $post;
         
         $result_name = $column_name;
         $result_val = '';
         
-        if(strpos($result_name, 'custom_field_val_') !== false){
+        if (strpos($result_name, 'custom_field_val_') !== false) {
             $result_val = substr($result_name, mb_strlen('custom_field_val_'));
             $result_name = 'custom_field';
-        }elseif(strpos($result_name, 'taxonomy_val_') !== false){
-            $result_val = substr($result_name, mb_strlen('taxonomy_val_'));            
+        } elseif (strpos($result_name, 'taxonomy_val_') !== false) {
+            $result_val = substr($result_name, mb_strlen('taxonomy_val_'));
             $result_name = 'taxonomy';
         }
 
@@ -195,12 +222,12 @@ class Gn_customize_post_list
                 $current_term = get_the_terms($post_id, $result_val);
                 if ($current_term) {
                     foreach ($current_term as $term) {
-                        if($post_type === 'post' && $result_val === 'category'){
+                        if ($post_type === 'post' && $result_val === 'category') {
                             echo "<a href='${admin_url()}edit.php?category_name={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
-                        }elseif($post_type === 'post' && $result_val === 'post_tag'){
+                        } elseif ($post_type === 'post' && $result_val === 'post_tag') {
                             echo "<a href='${admin_url()}edit.php?tag={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
-                        }else{
-                            echo "<a href='${admin_url()}edit.php?{$result_val}={$term->slug}&post_type={$post_type}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');                          
+                        } else {
+                            echo "<a href='${admin_url()}edit.php?{$result_val}={$term->slug}&post_type={$post_type}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
                         }
                     }
                 }
@@ -208,36 +235,38 @@ class Gn_customize_post_list
             default:
                 break;
         }
-
     }
 
     /**
      * 管理画面の投稿一覧にカスタムフィールドの絞り込み選択機能を追加します。
      */
 
-    function add_custom_taxonomies_term_filter()
+    public function add_custom_taxonomies_term_filter()
     {
         global $post_type;
         $taxonomies = get_taxonomies(array( 'object_type' => array( $post_type ), '_builtin' => false ), 'object');
-        
+
         foreach ($taxonomies as $value) {
             wp_dropdown_categories(array(
                 'show_option_all' => $value->label,
                 'orderby' => 'name',
                 'selected' => get_query_var($value->name),
-                'hide_empty' => 0,
                 'name' => $value->name,
                 'taxonomy' => $value->name,
                 'value_field' => 'slug',
+                'show_count' => true,
+                'hide_if_empty' => true
             ));
         }
     }
-    function activationHook(){
-        if(!get_option('gncpl_options')){
+    public function activationHook()
+    {
+        if (!get_option('gncpl_options')) {
             update_option('gncpl_options', array());
         }
     }
-    function deactivationHook(){
+    public function deactivationHook()
+    {
         delete_option('gncpl_options');
     }
 }

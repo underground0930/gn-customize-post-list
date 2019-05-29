@@ -1,4 +1,5 @@
-const { Component, render, Fragment } = wp.element;
+import{ Component, Fragment } from 'react';
+import {render} from 'react-dom';
 import '../css/style.css';
 import deepcopy from 'deepcopy';
 import axios from 'axios';
@@ -33,7 +34,7 @@ class App extends Component {
       types: window.gncpl_admin_post_types,
       options: window.gncpl_admin_options
     };
-    this.add = this.add.bind(this);
+    this.addColumn = this.addColumn.bind(this);
     this.deleteColumn = this.deleteColumn.bind(this);
     this.updateText = this.updateText.bind(this);
     this.updateSelect = this.updateSelect.bind(this);
@@ -41,7 +42,7 @@ class App extends Component {
     this.checkSelectType = this.checkSelectType.bind(this);
     this.updateOptions = this.updateOptions.bind(this);
   }
-  componentWillMount() {
+  componentDidMount() {
     this.init();
   }
   init() {
@@ -55,7 +56,7 @@ class App extends Component {
       return { options: Object.assign({}, prevState.options, newOptions) };
     });
   }
-  add(type) {
+  addColumn(type) {
     if (this.state.options[type].length >= SELECT_MAX_LENGTH) return;
     this.setState( prevState =>{
       prevState.options[type].push({...DEFAULT_OPTION})
@@ -79,10 +80,6 @@ class App extends Component {
       return {
         options: prevState.options
       };
-    });
-
-    this.setState({
-      options: this.state.options
     });
   }
   updateSelect(e, type, i) {
@@ -110,7 +107,6 @@ class App extends Component {
     return slug === 'taxonomy' || slug === 'custom_field' ? true : false;
   }
   updateOptions() {
-
     const data = {
         action: 'update_gncpl_options',
         security: window.security,
@@ -138,7 +134,7 @@ class App extends Component {
       <Fragment>
         {this.state.types.map(type => (
           <section className="gncpl-admin-section" key={type.name}>
-            <h4>【{type.label}】</h4>
+            <h4>【POST TYPE : {type.label}】</h4>
             <ul className="gncpl-admin-list">
               {this.state.options[type.name] &&
                 this.state.options[type.name].map((v, i) => {
@@ -212,7 +208,7 @@ class App extends Component {
               class="gncpl-admin-listAdd gncpl-admin-btn button button-primary button-large"
               onClick={e => {
                 e.preventDefault();
-                this.add(type.name);
+                this.addColumn(type.name);
               }}
             >
               add row
