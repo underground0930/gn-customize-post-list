@@ -84,11 +84,9 @@ dist
 sw.*
 
 # wordpress
-sql/
-app/public/*
-!app/public/wp-content
-app/public/wp-content/*
-!app/public/wp-content/plugins
-app/public/wp-content/plugins/*
-!app/public/wp-content/plugins/gn-customize-post-list
-
+/*
+!/wp-content
+/wp-content/*
+!/wp-content/plugins
+/wp-content/plugins/*
+!/wp-content/plugins/gn-customize-post-list

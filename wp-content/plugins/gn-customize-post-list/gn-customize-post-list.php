@@ -7,7 +7,7 @@
  *
  * Plugin Name: GN Customize Post List
  * Plugin URI: https://htmlgo.site/
- * Description: このプラグインは、記事一覧をカスタマイズ出来るようにします。
+ * Description: You can customize the display items of the article list.
  * Version: 1.0.0
  * Author: go.nishiduka
  * Author URI: https://htmlgo.site/
