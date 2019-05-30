@@ -11,9 +11,11 @@
  * Version: 1.0.0
  * Author: go.nishiduka
  * Author URI: https://htmlgo.site/
- * Text Domain: gncpl
+ * Text Domain: gn-customize-post-list
  * Domain Path: /languages
 **/
+
+if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 define('GNCPL_VERSION', '1.0.0');
 define('GNCPL_PLUGIN_BASENAME', plugin_basename(__FILE__));

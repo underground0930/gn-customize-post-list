@@ -1,4 +1,6 @@
 <?php
+    if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
     $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object'));
     $post_types_array = array();
 
