@@ -11,35 +11,17 @@ import ErrorTitle from './component/ErrorTitle';
 import Loading from './component/Loading';
 
 // script
-const OPTIONS = [
-  { key: 'title', label: 'title' },
-  { key: 'content', label: 'content' },
-  { key: 'custom_field_text', label: 'custom field text' },
-  { key: 'custom_field_img', label: 'custom field img' },
-  { key: 'taxonomy', label: 'taxonomy' },
-  { key: 'date', label: 'date' },
-  { key: 'author', label: 'author' },
-  { key: 'comments', label: 'comments' }
-];
-const DEFAULT_OPTION = {
-  key: 'title',
-  label: '',
-  value: ''
-};
-const DEFAULT_OPTIONS = [
-  DEFAULT_OPTION,
-  {
-    key: 'date',
-    label: '',
-    value: ''
-  }
-];
+const OPTIONS = window.gncpl_admin_selects;
+const DEFAULT_OPTION = window.gncpl_admin_default_option;
+const DEFAULT_OPTIONS = window.gncpl_admin_default_options;
 const SELECT_MAX_LENGTH = 6;
 
-let root = document.createElement('div');
+// dom
+const root = document.createElement('div');
 root.classList.add('gncpl-root');
 document.body.appendChild(root);
 
+// react class
 class App extends Component {
   constructor() {
     super();
@@ -132,13 +114,13 @@ class App extends Component {
   updateOptions() {
     const data = {
       action: 'update_gncpl_options',
-      security: window.security,
+      security: window.gncpl_admin_security,
       gncpl_options: this.state.options
     };
     const options = {
       method: 'POST',
       data: qs.stringify(data),
-      url: window.admin_ajax_url
+      url: window.gncpl_admin_ajax_url
     };
     const interval = 500;
 
