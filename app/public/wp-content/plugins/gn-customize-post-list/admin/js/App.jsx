@@ -16,19 +16,21 @@ const OPTIONS = [
   { key: 'content', label: 'content' },
   { key: 'custom_field', label: 'custom field' },
   { key: 'taxonomy', label: 'taxonomy' },
-  { key: 'date', label: 'date' }
+  { key: 'date', label: 'date' },
+  { key: 'author', label: 'author' },
+  { key: 'comments', label: 'comments' }
 ];
 const DEFAULT_OPTION = {
   key: 'title',
-  label: null,
-  value: null
+  label: '',
+  value: ''
 };
 const DEFAULT_OPTIONS = [
   DEFAULT_OPTION,
   {
     key: 'date',
-    label: null,
-    value: null
+    label: '',
+    value: ''
   }
 ];
 const SELECT_MAX_LENGTH = 6;
@@ -103,10 +105,10 @@ class App extends Component {
   updateSelect(e, type, i) {
     let val = e.target.value;
     this.setState(prevState => {
-      prevState.options[type][i]['key'] = val;
-      if (!this.checkSelectType) {
-        prevState.options[type][i]['label'] = null;
-        prevState.options[type][i]['value'] = null;
+      prevState.options[type][i] = {
+        key:val,
+        label: '',
+        value: '',
       }
       return {
         options: prevState.options
@@ -145,6 +147,7 @@ class App extends Component {
       .then(response => {
         const { data } = response;
         let errors = {};
+
         if (typeof data === 'object') {
           errors = {
             title: '入力データに不備があります',
@@ -169,11 +172,12 @@ class App extends Component {
         }, interval);
       })
       .catch(error => {
+        console.log(error);
         this.setState(
           {
             errors: {
               title: 'データの更新に失敗しました',
-              className: 'is-success',
+              className: 'is-error',
               list: []
             },
             loading: false
@@ -198,17 +202,29 @@ class App extends Component {
             <h4 className="gncpl-admin-postType">
               ■post type : <span>[{type.label}]</span>
             </h4>
+            {this.state.errors.list[type.name] && (
+              <ul className="gncpl-admin-error-list">
+                {Object.keys(this.state.errors.list[type.name]).map(key => {
+                  return (
+                    <li className="gncpl-admin-error-listChild" key={key}>
+                      {Number(key) + 1}列目 :{' '}
+                      {this.state.errors.list[type.name][key]}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
             <ul className="gncpl-admin-list">
               {this.state.options[type.name] &&
-                this.state.options[type.name].map((v, i) => {
+                this.state.options[type.name].map((select, selectIndex) => {
                   return (
-                    <li className="gncpl-admin-listChild" key={i}>
+                    <li className="gncpl-admin-listChild" key={selectIndex}>
                       <b>type :</b>
                       <select
                         className="gncpl-admin-listSelect"
-                        value={v['key']}
+                        value={select['key']}
                         onChange={e => {
-                          this.updateSelect(e, type.name, i);
+                          this.updateSelect(e, type.name, selectIndex);
                         }}
                       >
                         {OPTIONS.map(item => {
@@ -221,7 +237,7 @@ class App extends Component {
                       </select>
 
                       {(() => {
-                        if (this.checkSelectType(v.key)) {
+                        if (this.checkSelectType(select.key)) {
                           return (
                             <Fragment>
                               <div>
@@ -229,10 +245,15 @@ class App extends Component {
                                 <input
                                   className="gncpl-admin-input"
                                   type="text"
-                                  value={v.label}
+                                  value={select.label}
                                   placeholder="please input label"
                                   onChange={e => {
-                                    this.updateText('label', e, type.name, i);
+                                    this.updateText(
+                                      'label',
+                                      e,
+                                      type.name,
+                                      selectIndex
+                                    );
                                   }}
                                 />
                               </div>
@@ -241,10 +262,15 @@ class App extends Component {
                                 <input
                                   className="gncpl-admin-input"
                                   type="text"
-                                  value={v.value}
+                                  value={select.value}
                                   placeholder="please input slug"
                                   onChange={e => {
-                                    this.updateText('value', e, type.name, i);
+                                    this.updateText(
+                                      'value',
+                                      e,
+                                      type.name,
+                                      selectIndex
+                                    );
                                   }}
                                 />
                               </div>
@@ -256,7 +282,7 @@ class App extends Component {
                         <button
                           onClick={e => {
                             e.preventDefault();
-                            this.deleteColumn(type.name, i);
+                            this.deleteColumn(type.name, selectIndex);
                           }}
                           className="button btn-danger button-large gncpl-admin-listDelete"
                         >

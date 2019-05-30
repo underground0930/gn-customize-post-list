@@ -7,6 +7,10 @@
   font-weight: bold;
   margin-bottom:45px;
 }
+.gncpl-admin-error-listChild{
+  font-weight: bold;
+  color:#f00;
+}
 .gncpl-admin-postType{
   line-height: 1;
 }
@@ -65,7 +69,6 @@
 .gncpl-admin-input{
   width:100px;
 }
-
 .gncpl-admin-loadingObj,
 .gncpl-admin-loadingObj:after {
   border-radius: 50%;

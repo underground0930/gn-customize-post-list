@@ -47,7 +47,7 @@ class Gn_customize_post_list
         add_action('manage_posts_custom_column', array($this, 'add_column_value'), 10, 2);
         add_action('restrict_manage_posts', array($this, 'add_custom_taxonomies_term_filter'));
 
-        add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME , array( $this, 'admin_script'));
+        add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME, array( $this, 'admin_script'));
                 
         register_activation_hook(__FILE__, array($this, 'activationHook')); // プラグイン有効化された時の処理
         register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // プラグイン無効化された時の処理
@@ -55,69 +55,45 @@ class Gn_customize_post_list
         add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajaxのコールバック
     }
 
-    function check_length($text, $len){
-        return mb_strlen($text) > $len ? true : false;
+    public function check_length($text, $len)
+    {
+        $text_length = mb_strlen(trim($text));
+        return ($text_length > $len || $text_length === 0) ? true : false;
     }
 
-    function ajax_update_callback()
+    public function ajax_update_callback()
     {
-        $options = $_POST['gncpl_options'];                
+        $options = $_POST['gncpl_options'];
         $error = new WP_Error();
         $error_flag = false;
         $error_arr = array();
         $error_texts = array(
-            'over' => 'labelとvalueの値は' . INPUT_MAX_LENGTH . '文字以内にしてください。',
+            'over' => 'labelとvalueの値は1文字以上' . INPUT_MAX_LENGTH . '文字以内にしてください。',
             'duplicate' => '重複した項目を使用しています。'
         );
         
 
         if (isset($options) && check_ajax_referer('gncpl_nonce', 'security')) {
-            $i = 0;
-            foreach ($options as $option) {
-                $j = 0;
+            foreach ($options as $key => $option) {
+                $i = 0;
                 $duplicate_arr = array();
                 foreach ($option as $option_child) {
                     switch ($option_child['key']) {
 
                         case 'custom_field':
-
-                            array_push($duplicate_arr, 'custom_field_' . $option_child['value']);
-
-                            if( $this->check_length( $option_child['label'], INPUT_MAX_LENGTH ) || $this->check_length( $option_child['value'], INPUT_MAX_LENGTH ) ){
-
-                                $error_arr[$i][$j] = $error_texts['over'];
-                                $error_flag = true;
-
-                            }elseif( array_count_values($duplicate_arr)['custom_field_' . $option_child['value']] > 1 ){
-
-                                $error_arr[$i][$j] = $error_texts['duplicate'];
-                                $error_flag = true;
-
-                            }else{
-                                $option_child = array(
-                                    'key' => 'custom_field',
-                                    'label' => $option_child['label'],
-                                    'value' => $option_child['value'],
-                                );
-                            }
-                            break;
-
                         case 'taxonomy':
 
-                            array_push($duplicate_arr, 'taxonomy_' . $option_child['value']);
+                            array_push($duplicate_arr, $option_child['key'] . '_' . $option_child['value']);
 
-                            if( $this->check_length( $option_child['label'], INPUT_MAX_LENGTH ) || $this->check_length( $option_child['value'], INPUT_MAX_LENGTH ) ){
-                                $error_arr[$i][$j] = $error_texts['over'];
+                            if ($this->check_length($option_child['label'], INPUT_MAX_LENGTH) || $this->check_length($option_child['value'], INPUT_MAX_LENGTH)) {
+                                $error_arr[$key][$i] = $error_texts['over'];
                                 $error_flag = true;
-
-                            }elseif( array_count_values($duplicate_arr)['taxonomy_' . $option_child['value']] > 1 ){
-
-                                $error_arr[$i][$j] = $error_texts['duplicate'];
+                            } elseif (array_count_values($duplicate_arr)[ $option_child['key'] . '_' . $option_child['value']] > 1) {
+                                $error_arr[$key][$i] = $error_texts['duplicate'];
                                 $error_flag = true;
-
-                            }else{
+                            } else {
                                 $option_child = array(
-                                    'key' => 'taxonomy',
+                                    'key' => $option_child['key'],
                                     'label' => $option_child['label'],
                                     'value' => $option_child['value'],
                                 );
@@ -125,89 +101,53 @@ class Gn_customize_post_list
                             break;
 
                         case 'title':
-
-                            array_push($duplicate_arr, 'title');
-                            
-                            if( array_count_values($duplicate_arr)['title'] > 1 ){
-
-                                $error_arr[$i][$j] = $error_texts['duplicate'];
-                                $error_flag = true;
-
-                            }else{
-                                $option_child = array(
-                                    'key' => 'title',
-                                    'label' => null,
-                                    'value' => null,
-                                );                                
-                            }
-
-                            break;
-
                         case 'date':
+                        case 'content':
+                        case 'author':
+                        case 'comments':
 
-                            array_push($duplicate_arr, 'date');
+                            array_push($duplicate_arr, $option_child['key']);
                             
-                            if( array_count_values($duplicate_arr)[ 'date'] > 1 ){
-
-                                $error_arr[$i][$j] = $error_texts['duplicate'];
+                            if (array_count_values($duplicate_arr)[$option_child['key']] > 1) {
+                                $error_arr[$key][$i] = $error_texts['duplicate'];
                                 $error_flag = true;
-
-                            }else{
+                            } else {
                                 $option_child = array(
-                                    'key' => 'date',
-                                    'label' => null,
-                                    'value' => null,
-                                );                                
+                                    'key' => $option_child['key'],
+                                    'label' => "",
+                                    'value' => "",
+                                );
                             }
 
                             break;
-
-                        case 'content':
-
-                            array_push($duplicate_arr, 'content');
-                            
-                            if( array_count_values($duplicate_arr)[ 'content'] > 1 ){
-
-                                $error_arr[$i][$j] = $error_texts['duplicate'];
-                                $error_flag = true;
-
-                            }else{
-                                $option_child = array(
-                                    'key' => 'content',
-                                    'label' => null,
-                                    'value' => null,
-                                );                                
-                            }
 
                         default:
                             unset($option_child);
                             break;
                     }
-                    $j++;
+                    $i++;
                 }
-                $i++;
             }
 
-            if($error_flag){
-                $error->add('101', json_encode($error_arr)); 
-            }else{
+            if (!$error_flag) { // success
                 update_option('gncpl_options', $options);
                 $error->add('200', '');
+            } else { // error
+                $error->add('101', json_encode($error_arr));
             }
-
-        } else {
+        } else { // security error
             $error->add('100', 'security');
         }
         echo $error->get_error_message();
         exit;
     }
     
-    function admin_script()
+    public function admin_script()
     {
         wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', array(), '1.0.0', true);
     }
 
-    function add_admin_menu()
+    public function add_admin_menu()
     {
         $result = add_options_page(
             __('GN Customize Post List', 'gn-customize-post-list'),
@@ -220,14 +160,13 @@ class Gn_customize_post_list
         );
     }
     
-    function custom_admin()
+    public function custom_admin()
     {
         include_once('includes/admin-view.php');
     }
                 
-    function add_column_name($columns)
-    { 
-
+    public function add_column_name($columns)
+    {
         global $post;
         $post_type = get_post_type($post);
 
@@ -238,10 +177,8 @@ class Gn_customize_post_list
                 $name = $item['key'];
                 switch ($name) {
                     case 'custom_field':
-                        $new_array['custom_field_val_'. $item['value']] = esc_html($item['label']);
-                        break;
                     case 'taxonomy':
-                        $new_array['taxonomy_val_'. $item['value']] = esc_html($item['label']);
+                        $new_array[ $name . '_val_'. $item['value']] = esc_html($item['label']);
                         break;
                     case 'title':
                         $new_array['title'] = 'タイトル';
@@ -251,6 +188,12 @@ class Gn_customize_post_list
                         break;
                     case 'content':
                         $new_array['content'] = '本文';
+                        break;
+                    case 'comments':
+                        $new_array['comments'] = 'コメント';
+                        break;
+                    case 'author':
+                        $new_array['author'] = '作成者';
                         break;
                     default:
                         break;
@@ -262,8 +205,8 @@ class Gn_customize_post_list
         return $columns;
     }
     
-    function add_column_value($column_name, $post_id)
-    { 
+    public function add_column_value($column_name, $post_id)
+    {
         global $post;
         
         $result_name = $column_name;
@@ -280,13 +223,13 @@ class Gn_customize_post_list
         $post_type = get_post_type($post);
         switch ($result_name) {
             case 'content':
-                $content = strip_tags(get_post_field('post_content', $post_id));
-                $content = mb_strlen($content) > 30 ? mb_substr($content, 0, 20, 'UTF-8') . '...' : $content;
-                echo $content;
+                $val = strip_tags(get_post_field('post_'. $result_name, $post_id));
+                $val = mb_strlen($content) > 30 ? mb_substr($val, 0, 20, 'UTF-8') . '...' : $val;
+                echo $val;
                 break;
             
             case 'custom_field':
-                echo get_post_field($result_val, $post_id);
+                echo esc_html(get_post_field($result_val, $post_id));
                 break;
                 
             case 'taxonomy':
@@ -312,7 +255,7 @@ class Gn_customize_post_list
      * 管理画面の投稿一覧にカスタムフィールドの絞り込み選択機能を追加します。
      */
 
-    function add_custom_taxonomies_term_filter()
+    public function add_custom_taxonomies_term_filter()
     {
         global $post_type;
         $taxonomies = get_taxonomies(array( 'object_type' => array( $post_type ), '_builtin' => false ), 'object');
@@ -330,13 +273,13 @@ class Gn_customize_post_list
             ));
         }
     }
-    function activationHook()
+    public function activationHook()
     {
         if (!get_option('gncpl_options')) {
             update_option('gncpl_options', array());
         }
     }
-    function deactivationHook()
+    public function deactivationHook()
     {
         delete_option('gncpl_options');
     }
