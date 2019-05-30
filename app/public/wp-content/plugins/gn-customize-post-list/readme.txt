@@ -7,7 +7,9 @@ Requires PHP: 7.2.9
 Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
- 
+
+投稿、カスタム投稿の記事一覧画面をカスタマイズ出来ます。
+
 You can customize the display items of the article list.
  
 == Description ==
@@ -73,6 +75,7 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
  
 = 0.5 =
 * List versions from most recent at top to oldest at bottom.
+* Some
  
 == Upgrade Notice ==
  

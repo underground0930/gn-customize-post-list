@@ -40,13 +40,21 @@ class Gn_customize_post_list
             'post' => (object) array(
                 'name' => 'post',
                 'label' => 'POST',
-            )
+            ),
+            'page' => (object) array(
+                'name' => 'page',
+                'label' => 'PAGE',
+            ),
         );
          
         add_action('admin_menu', array($this, 'add_admin_menu'));
 
+        add_filter('manage_pages_columns', array($this, 'add_column_name'));
+        add_action('manage_pages_custom_column', array($this, 'add_column_value'), 10, 2);
+
         add_filter('manage_posts_columns', array($this, 'add_column_name'));
         add_action('manage_posts_custom_column', array($this, 'add_column_value'), 10, 2);
+
         add_action('restrict_manage_posts', array($this, 'add_custom_taxonomies_term_filter'));
 
         add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME, array( $this, 'admin_script'));
@@ -56,6 +64,7 @@ class Gn_customize_post_list
         
         add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajaxのコールバック
     }
+
 
     public function check_length($text, $len)
     {
@@ -161,6 +170,7 @@ class Gn_customize_post_list
             '',
             2
         );
+
     }
     
     public function custom_admin()
@@ -169,9 +179,10 @@ class Gn_customize_post_list
     }
                 
     public function add_column_name($columns)
-    {
+    {   
         global $post;
         $post_type = get_post_type($post);
+        $post_type = $post_type ? $post_type : 'page';
 
         if (isset($this->gncpl_options[$post_type])) {
             $new_array = $this->default_column;
@@ -208,6 +219,7 @@ class Gn_customize_post_list
 
         return $columns;
     }
+
     
     public function add_column_value($column_name, $post_id)
     {
@@ -231,7 +243,7 @@ class Gn_customize_post_list
         switch ($result_name) {
             case 'content':
                 $val = strip_tags(get_post_field('post_'. $result_name, $post_id));
-                $val = mb_strlen($content) > 30 ? mb_substr($val, 0, 20, 'UTF-8') . '...' : $val;
+                $val = mb_strlen($val) > 50 ? mb_substr($val, 0, 50, 'UTF-8') . '...' : $val;
                 echo $val;
                 break;
 
