@@ -14,7 +14,8 @@ import Loading from './component/Loading';
 const OPTIONS = [
   { key: 'title', label: 'title' },
   { key: 'content', label: 'content' },
-  { key: 'custom_field', label: 'custom field' },
+  { key: 'custom_field_text', label: 'custom field text' },
+  { key: 'custom_field_img', label: 'custom field img' },
   { key: 'taxonomy', label: 'taxonomy' },
   { key: 'date', label: 'date' },
   { key: 'author', label: 'author' },
@@ -106,10 +107,10 @@ class App extends Component {
     let val = e.target.value;
     this.setState(prevState => {
       prevState.options[type][i] = {
-        key:val,
+        key: val,
         label: '',
-        value: '',
-      }
+        value: ''
+      };
       return {
         options: prevState.options
       };
@@ -124,7 +125,9 @@ class App extends Component {
     });
   }
   checkSelectType(slug) {
-    return slug === 'taxonomy' || slug === 'custom_field' ? true : false;
+    return ['taxonomy', 'custom_field_img', 'custom_field_text'].some(e => {
+      return e === slug;
+    });
   }
   updateOptions() {
     const data = {

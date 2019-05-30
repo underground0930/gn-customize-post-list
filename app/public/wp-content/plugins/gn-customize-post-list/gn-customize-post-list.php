@@ -80,7 +80,8 @@ class Gn_customize_post_list
                 foreach ($option as $option_child) {
                     switch ($option_child['key']) {
 
-                        case 'custom_field':
+                        case 'custom_field_img':
+                        case 'custom_field_text':
                         case 'taxonomy':
 
                             array_push($duplicate_arr, $option_child['key'] . '_' . $option_child['value']);
@@ -176,7 +177,8 @@ class Gn_customize_post_list
             foreach ($this->gncpl_options[$post_type] as $item) {
                 $name = $item['key'];
                 switch ($name) {
-                    case 'custom_field':
+                    case 'custom_field_img':                    
+                    case 'custom_field_text':
                     case 'taxonomy':
                         $new_array[ $name . '_val_'. $item['value']] = esc_html($item['label']);
                         break;
@@ -212,9 +214,12 @@ class Gn_customize_post_list
         $result_name = $column_name;
         $result_val = '';
         
-        if (strpos($result_name, 'custom_field_val_') !== false) {
-            $result_val = substr($result_name, mb_strlen('custom_field_val_'));
-            $result_name = 'custom_field';
+        if (strpos($result_name, 'custom_field_text_val_') !== false) {
+            $result_val = substr($result_name, mb_strlen('custom_field_text_val_'));
+            $result_name = 'custom_field_text';
+        } elseif (strpos($result_name, 'custom_field_img_val_') !== false) {
+            $result_val = substr($result_name, mb_strlen('custom_field_img_val_'));
+            $result_name = 'custom_field_img';
         } elseif (strpos($result_name, 'taxonomy_val_') !== false) {
             $result_val = substr($result_name, mb_strlen('taxonomy_val_'));
             $result_name = 'taxonomy';
@@ -227,9 +232,13 @@ class Gn_customize_post_list
                 $val = mb_strlen($content) > 30 ? mb_substr($val, 0, 20, 'UTF-8') . '...' : $val;
                 echo $val;
                 break;
-            
-            case 'custom_field':
+
+            case 'custom_field_text':
                 echo esc_html(get_post_field($result_val, $post_id));
+                break;
+            
+            case 'custom_field_img':
+                echo "<img width='50' src='". wp_get_attachment_image_src(get_post_field($result_val, $post_id))[0]  ."' alt=''>" ;
                 break;
                 
             case 'taxonomy':
