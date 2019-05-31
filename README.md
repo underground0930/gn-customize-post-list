@@ -12,10 +12,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
   
 ## == Description ==
 
-*[EN]*
+*[EN]*  
 You can customize the display items of the article list.
 
-*[JA]*
+*[JA]*  
 「投稿」、「カスタム投稿」、「固定ページ」の記事一覧ページの表示項目をカスタマイズ出来ます。
 
 * プラグインを有効化すると、「設定」メニューに「gn-customize-post-list」の項目が追加されるので、そちらから編集を行ってください。
