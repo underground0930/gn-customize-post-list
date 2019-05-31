@@ -1,5 +1,7 @@
 <?php
-    if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+    if (! defined('ABSPATH')) {
+        exit;
+    } // Exit if accessed directly
 
     $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object'));
     $post_types_array = array();
@@ -9,7 +11,7 @@
             'name' => $post_type->name,
             'label' => $post_type->label,
         ));
-    }            
+    }
     $default_option = array(
         'key' => 'title',
         'label' => '',
@@ -36,7 +38,7 @@
 ?>
 
 <div class="gncpl-admin-wrap">
-    <script>
+  <script>
     <?php
         echo 'var gncpl_admin_default_option =' . json_encode($default_option) . ';' . "\n";
         echo 'var gncpl_admin_default_options =' . json_encode($default_options) . ';' . "\n";
@@ -46,7 +48,8 @@
         echo 'var gncpl_admin_options = ' . json_encode(get_option('gncpl_options'))  . ';' . "\n";
         echo 'var gncpl_admin_security = "' . wp_create_nonce('gncpl_nonce') . '";' . "\n";
     ?>
-    </script>
-    <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?></h2>
-    <div id="gncpl-admin-app"></div>
+  </script>
+  <h2 class="gncpl-admin-title"><?php echo GNCPL_PLUGIN_NAME; ?>
+  </h2>
+  <div id="gncpl-admin-app"></div>
 </div>

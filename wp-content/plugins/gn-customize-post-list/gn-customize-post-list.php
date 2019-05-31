@@ -15,7 +15,9 @@
  * Domain Path: /languages
 **/
 
-if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (! defined('ABSPATH')) {
+    exit;
+} // Exit if accessed directly
 
 define('GNCPL_VERSION', '1.0.0');
 define('GNCPL_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -32,7 +34,7 @@ class Gn_customize_post_list
     private $default_column = array(
         'cb'    => '<input type="checkbox" />',
     );
-    
+
     public function __construct()
     {
         $this->gncpl_options = get_option(' gncpl_options ');
@@ -46,7 +48,7 @@ class Gn_customize_post_list
                 'label' => 'PAGE',
             ),
         );
-         
+
         add_action('admin_menu', array($this, 'add_admin_menu'));
 
         add_filter('manage_pages_columns', array($this, 'add_column_name'));
@@ -58,10 +60,10 @@ class Gn_customize_post_list
         add_action('restrict_manage_posts', array($this, 'add_custom_taxonomies_term_filter'));
 
         add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME, array( $this, 'admin_script'));
-                
+
         register_activation_hook(__FILE__, array($this, 'activationHook')); // プラグイン有効化された時の処理
         register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // プラグイン無効化された時の処理
-        
+
         add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajaxのコールバック
     }
 
@@ -82,7 +84,7 @@ class Gn_customize_post_list
             'over' => 'labelとvalueの値は1文字以上' . INPUT_MAX_LENGTH . '文字以内にしてください。',
             'duplicate' => '重複した項目を使用しています。'
         );
-        
+
 
         if (isset($options) && check_ajax_referer('gncpl_nonce', 'security')) {
             foreach ($options as $key => $option) {
@@ -119,7 +121,7 @@ class Gn_customize_post_list
                         case 'comments':
 
                             array_push($duplicate_arr, $option_child['key']);
-                            
+
                             if (array_count_values($duplicate_arr)[$option_child['key']] > 1) {
                                 $error_arr[$key][$i] = $error_texts['duplicate'];
                                 $error_flag = true;
@@ -153,7 +155,7 @@ class Gn_customize_post_list
         echo $error->get_error_message();
         exit;
     }
-    
+
     public function admin_script()
     {
         wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', array(), '1.0.0', true);
@@ -170,16 +172,15 @@ class Gn_customize_post_list
             '',
             2
         );
-
     }
-    
+
     public function custom_admin()
     {
         include_once('includes/admin-view.php');
     }
-                
+
     public function add_column_name($columns)
-    {   
+    {
         global $post;
         $post_type = get_post_type($post);
         $post_type = $post_type ? $post_type : 'page';
@@ -190,7 +191,7 @@ class Gn_customize_post_list
             foreach ($this->gncpl_options[$post_type] as $item) {
                 $name = $item['key'];
                 switch ($name) {
-                    case 'custom_field_img':                    
+                    case 'custom_field_img':
                     case 'custom_field_text':
                     case 'taxonomy':
                         $new_array[ $name . '_val_'. $item['value']] = esc_html($item['label']);
@@ -220,14 +221,14 @@ class Gn_customize_post_list
         return $columns;
     }
 
-    
+
     public function add_column_value($column_name, $post_id)
     {
         global $post;
-        
+
         $result_name = $column_name;
         $result_val = '';
-        
+
         if (strpos($result_name, 'custom_field_text_val_') !== false) {
             $result_val = substr($result_name, mb_strlen('custom_field_text_val_'));
             $result_name = 'custom_field_text';
@@ -250,11 +251,11 @@ class Gn_customize_post_list
             case 'custom_field_text':
                 echo esc_html(get_post_field($result_val, $post_id));
                 break;
-            
+
             case 'custom_field_img':
                 echo "<img width='50' src='". wp_get_attachment_image_src(get_post_field($result_val, $post_id))[0]  ."' alt=''>" ;
                 break;
-                
+
             case 'taxonomy':
                 $current_term = get_the_terms($post_id, $result_val);
                 if ($current_term) {

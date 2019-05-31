@@ -8,7 +8,7 @@
     "dev": "webpack --config webpack.config.dev.js",
     "prod": "webpack --config webpack.config.prod.js"
   },
-  "jsFilePath": "app/public/wp-content/plugins/gn-customize-post-list/admin/js/",
+  "jsFilePath": "wp-content/plugins/gn-customize-post-list/admin/js/",
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -21,7 +21,7 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "css-loader": "^2.1.1",
     "deepcopy": "^2.0.0",
     "jump.js": "^1.0.2",
