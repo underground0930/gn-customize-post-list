@@ -8,18 +8,13 @@ Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-## == Description ==
+== Description ==
 
 *[EN]*
 You can customize the display items of the article list.
 
 *[JA]*
 「投稿」、「カスタム投稿」、「固定ページ」の記事一覧ページの表示項目をカスタマイズ出来ます。
-
-
-## == Usage ==
-
-*[JA]*
 
 ・プラグインを有効化すると、「設定」メニューに「gn-customize-post-list」の項目が追加されるので、そちらから編集を行ってください。
 
@@ -47,7 +42,8 @@ You can customize the display items of the article list.
 
 ・ custom_field_text, custom_field_img, taxonomy の「label」「slug」は 1文字以上30字未満で入力してください。
 
-## == Installation ==
+== Installation ==
+
 *[EN]*
 
 1. Upload pluginFiles to the `/wp-content/plugins/` directory
@@ -57,27 +53,24 @@ You can customize the display items of the article list.
 1. プラグインのファイルディレクトリを `/wp-content/plugins/` ディレクトリにアップロードしてください。
 2. プラグインメニューからプラグインの有効化をしてください
 
-## == Screenshots ==
+== Screenshots ==
 
 1. /assets/screenshot-1.png
 2. /assets/screenshot-2.png
 3. /assets/screenshot-3.png
 
-## == Changelog ==
+== Changelog ==
 
 *[EN]*
 
-### = 1.0.0 =
+= 1.0.0 =
 
 *Release Date - 2019/5/31*
 * initial version
 
 *[JA]*
 
-### = 1.0.0 =
+= 1.0.0 =
 
 *リリース日 - 2019/5/31*
 * 初期バージョン
-
-## == Upgrade Notice ==
-no information
