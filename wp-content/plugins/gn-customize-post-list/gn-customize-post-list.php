@@ -81,8 +81,8 @@ class Gn_customize_post_list
         $error_flag = false;
         $error_arr = array();
         $error_texts = array(
-            'over' => __('label and value are', 'gn-customize-post-list') . INPUT_MAX_LENGTH . __('error_1_2', 'gn-customize-post-list'),
-            'duplicate' => __('error_2', 'gn-customize-post-list')
+            'over' => '「label」 and 「slug」 length is ( 0 < length < ' . INPUT_MAX_LENGTH . ')' ,
+            'duplicate' => 'don\'t duplicate'
         );
 
 
@@ -164,8 +164,8 @@ class Gn_customize_post_list
     public function add_admin_menu()
     {
         $result = add_options_page(
-            __('GN Customize Post List', 'gn-customize-post-list'),
-            __('GN Customize Post List', 'gn-customize-post-list'),
+            'GN Customize Post List',
+            'GN Customize Post List',
             'administrator',
             'gn-customize-post-list',
             array($this,'custom_admin'),

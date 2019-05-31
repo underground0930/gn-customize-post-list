@@ -135,19 +135,19 @@ class App extends Component {
 
         if (typeof data === 'object') {
           errors = {
-            title: '入力データに不備があります',
+            title: 'There is a defect in the input data',
             className: 'is-error',
             list: data
           };
         } else if (data === 'security') {
           errors = {
-            title: '不正な操作がありました',
+            title: 'There was an illegal operation.',
             className: 'is-error',
             list: []
           };
         } else {
           errors = {
-            title: 'データを更新しました',
+            title: 'update success',
             className: 'is-success',
             list: []
           };
@@ -161,7 +161,7 @@ class App extends Component {
         this.setState(
           {
             errors: {
-              title: 'データの更新に失敗しました',
+              title: 'update failed',
               className: 'is-error',
               list: []
             },
@@ -192,7 +192,7 @@ class App extends Component {
                 {Object.keys(this.state.errors.list[type.name]).map(key => {
                   return (
                     <li className="gncpl-admin-error-listChild" key={key}>
-                      {Number(key) + 1}列目 :{' '}
+                      {Number(key) + 1}th row :{' '}
                       {this.state.errors.list[type.name][key]}
                     </li>
                   );
