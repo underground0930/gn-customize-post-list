@@ -61,10 +61,10 @@ class Gn_customize_post_list
 
         add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME, array( $this, 'admin_script'));
 
-        register_activation_hook(__FILE__, array($this, 'activationHook')); // プラグイン有効化された時の処理
-        register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // プラグイン無効化された時の処理
+        register_activation_hook(__FILE__, array($this, 'activationHook')); // plugin　active
+        register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // plugin　inactive
 
-        add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajaxのコールバック
+        add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajax callback
     }
 
 
@@ -81,8 +81,8 @@ class Gn_customize_post_list
         $error_flag = false;
         $error_arr = array();
         $error_texts = array(
-            'over' => 'labelとvalueの値は1文字以上' . INPUT_MAX_LENGTH . '文字以内にしてください。',
-            'duplicate' => '重複した項目を使用しています。'
+            'over' => __('label and value are', 'gn-customize-post-list') . INPUT_MAX_LENGTH . __('error_1_2', 'gn-customize-post-list'),
+            'duplicate' => __('error_2', 'gn-customize-post-list')
         );
 
 
@@ -197,19 +197,19 @@ class Gn_customize_post_list
                         $new_array[ $name . '_val_'. $item['value']] = esc_html($item['label']);
                         break;
                     case 'title':
-                        $new_array['title'] = 'タイトル';
+                        $new_array['title'] = 'title';
                         break;
                     case 'date':
-                        $new_array['date'] = '日時';
+                        $new_array['date'] = 'date';
                         break;
                     case 'content':
-                        $new_array['content'] = '本文';
+                        $new_array['content'] = 'content';
                         break;
                     case 'comments':
-                        $new_array['comments'] = 'コメント';
+                        $new_array['comments'] ='comments';
                         break;
                     case 'author':
-                        $new_array['author'] = '作成者';
+                        $new_array['author'] = 'author';
                         break;
                     default:
                         break;
