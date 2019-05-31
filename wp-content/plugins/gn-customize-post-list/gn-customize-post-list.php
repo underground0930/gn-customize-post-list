@@ -6,13 +6,12 @@
  * @package GN Customize Post List
  *
  * Plugin Name: GN Customize Post List
- * Plugin URI: https://htmlgo.site/
+ * Plugin URI: https://github.com/underground0930/gn-customize-post-list
  * Description: You can customize the display items of the article list.
  * Version: 1.0.0
  * Author: go.nishiduka
  * Author URI: https://htmlgo.site/
  * Text Domain: gn-customize-post-list
- * Domain Path: /languages
 **/
 
 if (! defined('ABSPATH')) {

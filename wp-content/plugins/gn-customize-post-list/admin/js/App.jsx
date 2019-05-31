@@ -192,8 +192,7 @@ class App extends Component {
                 {Object.keys(this.state.errors.list[type.name]).map(key => {
                   return (
                     <li className="gncpl-admin-error-listChild" key={key}>
-                      {Number(key) + 1}th row :{' '}
-                      {this.state.errors.list[type.name][key]}
+                      {Number(key) + 1}th row : {this.state.errors.list[type.name][key]}
                     </li>
                   );
                 })}
