@@ -80,12 +80,12 @@ class Gn_customize_post_list
         $error_flag = false;
         $error_arr = array();
         $error_texts = array(
-            'over' => '「label」 and 「slug」 length is ( 0 < length < ' . INPUT_MAX_LENGTH . ')' ,
+            'datatype' => 'label\'s and slug\'s data type must be string' ,
+            'over' => 'label\'s and slug\'s length is ( 0 < length < ' . INPUT_MAX_LENGTH . ')' ,
             'duplicate' => 'don\'t duplicate'
         );
 
-
-        if (isset($options) && check_ajax_referer('gncpl_nonce', 'security')) {
+        if (isset($options) && check_ajax_referer('gncpl_nonce', 'security') && current_user_can('activate_plugins')) {
             foreach ($options as $key => $option) {
                 $i = 0;
                 $duplicate_arr = array();
@@ -98,7 +98,10 @@ class Gn_customize_post_list
 
                             array_push($duplicate_arr, $option_child['key'] . '_' . $option_child['value']);
 
-                            if ($this->check_length($option_child['label'], INPUT_MAX_LENGTH) || $this->check_length($option_child['value'], INPUT_MAX_LENGTH)) {
+                            if ('string' !== gettype($option_child['label']) || 'string' !== gettype($option_child['value']) ) {
+                                $error_arr[$key][$i] = $error_texts['datatype'];
+                                $error_flag = true;
+                            } elseif ($this->check_length($option_child['label'], INPUT_MAX_LENGTH) || $this->check_length($option_child['value'], INPUT_MAX_LENGTH)) {
                                 $error_arr[$key][$i] = $error_texts['over'];
                                 $error_flag = true;
                             } elseif (array_count_values($duplicate_arr)[ $option_child['key'] . '_' . $option_child['value']] > 1) {
@@ -107,8 +110,8 @@ class Gn_customize_post_list
                             } else {
                                 $option_child = array(
                                     'key' => $option_child['key'],
-                                    'label' => $option_child['label'],
-                                    'value' => $option_child['value'],
+                                    'label' => sanitize_text_field($option_child['label']),
+                                    'value' => sanitize_text_field($option_child['value']),
                                 );
                             }
                             break;
@@ -193,7 +196,7 @@ class Gn_customize_post_list
                     case 'custom_field_img':
                     case 'custom_field_text':
                     case 'taxonomy':
-                        $new_array[ $name . '_val_'. $item['value']] = esc_html($item['label']);
+                        $new_array[ $name . '_val_'. $item['value']] = sanitize_text_field($item['label']);
                         break;
                     case 'title':
                         $new_array['title'] = 'title';
