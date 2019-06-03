@@ -85,7 +85,6 @@ sw.*
 
 # wordpress
 /*
-!/ForWordPress.org
 !/wp-content
 /wp-content/*
 !/wp-content/plugins
