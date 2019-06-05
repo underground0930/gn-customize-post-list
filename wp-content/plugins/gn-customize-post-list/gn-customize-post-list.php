@@ -8,7 +8,7 @@
  * Plugin Name: GN Customize Post List
  * Plugin URI: https://github.com/underground0930/gn-customize-post-list
  * Description: You can customize the display items of the article list.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: go.nishiduka
  * Author URI: https://htmlgo.site/
  * Text Domain: gn-customize-post-list
@@ -98,7 +98,7 @@ class Gn_customize_post_list
 
                             array_push($duplicate_arr, $option_child['key'] . '_' . $option_child['value']);
 
-                            if ('string' !== gettype($option_child['label']) || 'string' !== gettype($option_child['value']) ) {
+                            if ('string' !== gettype($option_child['label']) || 'string' !== gettype($option_child['value'])) {
                                 $error_arr[$key][$i] = $error_texts['datatype'];
                                 $error_flag = true;
                             } elseif ($this->check_length($option_child['label'], INPUT_MAX_LENGTH) || $this->check_length($option_child['value'], INPUT_MAX_LENGTH)) {

@@ -4,7 +4,7 @@ Tags: admin
 Requires at least: 5.0
 Tested up to: 5.2.1
 Requires PHP: 5.6.20
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,6 +12,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 *[EN]*
 You can customize the display items of the article list.
+Add a drop-down list of the terms that each taxonomy has to the post screen list.
 
 *[JA]*
 * 「投稿」、「カスタム投稿」、「固定ページ」の記事一覧ページの表示項目をカスタマイズ出来るWordressプラグインです。
@@ -59,9 +60,19 @@ You can customize the display items of the article list.
 *Release Date - 2019/6/2*
 * initial version
 
+= 1.0.1 =
+
+*Release Date - 2019/6/5*
+* change 「Requires PHP」
+
 *[JA]*
 
 = 1.0.0 =
 
 *リリース日 - 2019/6/2*
 * 初期バージョン
+
+= 1.0.1 =
+
+*リリース日 - 2019/6/5*
+* 「Requires PHP」を変更。
