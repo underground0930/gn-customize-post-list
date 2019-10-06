@@ -8,7 +8,7 @@
  * Plugin Name: GN Customize Post List
  * Plugin URI: https://github.com/underground0930/gn-customize-post-list
  * Description: You can customize the display items of the article list.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: go.nishiduka
  * Author URI: https://htmlgo.site/
  * Text Domain: gn-customize-post-list
@@ -263,11 +263,11 @@ class Gn_customize_post_list
                 if ($current_term) {
                     foreach ($current_term as $term) {
                         if ($post_type === 'post' && $result_val === 'category') {
-                            echo "<a href='${admin_url()}edit.php?category_name={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
+                            echo "<a href='/wp-admin/edit.php?category_name={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
                         } elseif ($post_type === 'post' && $result_val === 'post_tag') {
-                            echo "<a href='${admin_url()}edit.php?tag={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
+                            echo "<a href='/wp-admin/edit.php?tag={$term->slug}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
                         } else {
-                            echo "<a href='${admin_url()}edit.php?{$result_val}={$term->slug}&post_type={$post_type}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
+                            echo "<a href='/wp-admin/edit.php?{$result_val}={$term->slug}&post_type={$post_type}'>{$term->name}</a>" . ($term !== end($current_term) ? ', ' : '');
                         }
                     }
                 }
