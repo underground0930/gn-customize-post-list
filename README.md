@@ -4,5 +4,5 @@
 * 投稿画面一覧にそれぞれのタクソノミーが持つタームでの絞り込みのプルダウンを付加します。
 
 ## Detail
-以下をご覧ください
+以下をご覧ください  
 https://github.com/underground0930/gn-customize-post-list/blob/master/wp-content/plugins/gn-customize-post-list/readme.txt
