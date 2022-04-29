@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: wentbook
 Tags: admin
-Requires at least: 5.0
-Tested up to: 5.2.3
-Requires PHP: 5.6.20
-Stable tag: 1.0.2
+Requires at least: 5.9.3
+Tested up to: 5.9.3
+Requires PHP: 7.4.29
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,11 @@ Add a drop-down list of the terms that each taxonomy has to the post screen list
 *Release Date - 2019/10/6*
 * Fixed a notice on the management screen.
 
+*Release Date - 2022/4/29*
+* Fixed a notice on the management screen.
+* 「Requires PHP」updated
+* 「Requires at least」 updated
+* 「Tested up to」 updated
 
 *[JA]*
 
@@ -87,3 +92,11 @@ Add a drop-down list of the terms that each taxonomy has to the post screen list
 
 *リリース日 - 2019/10/6*
 * 管理画面でnoticeが出ていたので修正
+
+= 1.1.0 =
+
+*リリース日 - 2022/4/29*
+* 管理画面でnoticeが出ていたので修正
+* 「Requires PHP」を更新
+* 「Requires at least」 を更新
+* 「Tested up to」 を更新

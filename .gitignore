@@ -90,3 +90,4 @@ sw.*
 !/wp-content/plugins
 /wp-content/plugins/*
 !/wp-content/plugins/gn-customize-post-list
+/wp-content/plugins/gn-customize-post-list/admin/*
