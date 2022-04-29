@@ -1,0 +1,11 @@
+{
+	"core": "https://ja.wordpress.org/wordpress-5.9.3-ja.zip",
+  "plugins": [
+		"./wp-content/plugins/gn-customize-post-list"
+	],
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true,
+		"WP_POST_REVISIONS": false
+	}
+}

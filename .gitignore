@@ -84,7 +84,6 @@ dist
 sw.*
 
 # wordpress
-/*
 !/wp-content
 /wp-content/*
 !/wp-content/plugins
