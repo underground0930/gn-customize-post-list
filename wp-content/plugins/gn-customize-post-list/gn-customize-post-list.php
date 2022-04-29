@@ -160,7 +160,7 @@ class Gn_customize_post_list
 
     public function admin_script()
     {
-        wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/scripts.js', array(), '1.0.0', true);
+        wp_enqueue_script('gncpl_js', GNCPL_PLUGIN_URL . '/admin/js/app.bundle.js', array(), '1.1.0', true);
     }
 
     public function add_admin_menu()
