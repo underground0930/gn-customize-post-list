@@ -203,23 +203,24 @@ class App extends Component {
                 this.state.options[type.name].map((select, selectIndex) => {
                   return (
                     <li className="gncpl-admin-listChild" key={selectIndex}>
-                      <b>type :</b>
-                      <select
-                        className="gncpl-admin-listSelect"
-                        value={select['key']}
-                        onChange={e => {
-                          this.updateSelect(e, type.name, selectIndex);
-                        }}
-                      >
-                        {OPTIONS.map(item => {
-                          return (
-                            <option key={item.key} value={item.key}>
-                              {item.label}
-                            </option>
-                          );
-                        })}
-                      </select>
-
+                      <div>
+                        <b>type :</b>
+                        <select
+                          className="gncpl-admin-listSelect"
+                          value={select['key']}
+                          onChange={e => {
+                            this.updateSelect(e, type.name, selectIndex);
+                          }}
+                        >
+                          {OPTIONS.map(item => {
+                            return (
+                              <option key={item.key} value={item.key}>
+                                {item.label}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
                       {(() => {
                         if (this.checkSelectType(select.key)) {
                           return (

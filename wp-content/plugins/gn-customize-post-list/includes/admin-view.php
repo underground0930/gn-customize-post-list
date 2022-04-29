@@ -3,38 +3,35 @@
         exit;
     } // Exit if accessed directly
 
-    $this->post_types = array_merge($this->post_types, get_post_types(array('public'  => true, '_builtin' => false ), 'object'));
-    $post_types_array = array();
+    $this->post_types = array_merge($this->post_types, get_post_types(['public'  => true, '_builtin' => false], 'object'));
+    $post_types_array = [];
 
     foreach ($this->post_types as $post_type) {
-        array_push($post_types_array, array(
-            'name' => $post_type->name,
-            'label' => $post_type->label,
-        ));
+        array_push($post_types_array, ['name' => $post_type->name,'label' => $post_type->label,]);
     }
-    $default_option = array(
+    $default_option = [
         'key' => 'title',
         'label' => '',
         'value' => ''
-    );
-    $default_options = array(
+      ];
+    $default_options = [
         $default_option,
-        array(
-            'key' => 'date',
-            'label' => '',
-            'value' => ''
-        )
-    );
-    $selects = array(
-        array( 'key' => 'title', 'label' => 'title' ),
-        array( 'key' => 'content', 'label' => 'content' ),
-        array( 'key' => 'custom_field_text', 'label' => 'custom field text' ),
-        array( 'key' => 'custom_field_img', 'label' => 'custom field img' ),
-        array( 'key' => 'taxonomy', 'label' => 'taxonomy' ),
-        array( 'key' => 'date', 'label' => 'date' ),
-        array( 'key' => 'author', 'label' => 'author' ),
-        array( 'key' => 'comments', 'label' => 'comments' )
-    );
+        [
+          'key' => 'date',
+          'label' => '',
+          'value' => ''
+        ]
+      ];
+    $selects = [
+        [ 'key' => 'title', 'label' => 'title' ],
+        [ 'key' => 'content', 'label' => 'content' ],
+        [ 'key' => 'custom_field_text', 'label' => 'custom field text' ],
+        [ 'key' => 'custom_field_img', 'label' => 'custom field img' ],
+        [ 'key' => 'taxonomy', 'label' => 'taxonomy' ],
+        [ 'key' => 'date', 'label' => 'date' ],
+        [ 'key' => 'author', 'label' => 'author' ],
+        [ 'key' => 'comments', 'label' => 'comments' ]
+    ];
 ?>
 
 <div class="gncpl-admin-wrap">

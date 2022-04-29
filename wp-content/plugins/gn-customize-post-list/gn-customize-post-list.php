@@ -30,40 +30,40 @@ class Gn_customize_post_list
 {
     private $post_types;
     private $gncpl_options;
-    private $default_column = array(
-        'cb'    => '<input type="checkbox" />',
-    );
+    private $default_column = [
+      'cb' => '<input type="checkbox" />',
+    ];
 
     public function __construct()
     {
         $this->gncpl_options = get_option(' gncpl_options ');
-        $this->post_types = array(
-            'post' => (object) array(
+        $this->post_types = [
+            'post' => (object) [
                 'name' => 'post',
                 'label' => 'POST',
-            ),
-            'page' => (object) array(
+              ],
+            'page' => (object) [
                 'name' => 'page',
                 'label' => 'PAGE',
-            ),
-        );
+              ],
+        ];
 
-        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_menu', [$this, 'add_admin_menu']);
 
-        add_filter('manage_pages_columns', array($this, 'add_column_name'));
-        add_action('manage_pages_custom_column', array($this, 'add_column_value'), 10, 2);
+        add_filter('manage_pages_columns', [$this, 'add_column_name']);
+        add_action('manage_pages_custom_column', [$this, 'add_column_value'], 10, 2);
 
-        add_filter('manage_posts_columns', array($this, 'add_column_name'));
-        add_action('manage_posts_custom_column', array($this, 'add_column_value'), 10, 2);
+        add_filter('manage_posts_columns', [$this, 'add_column_name']);
+        add_action('manage_posts_custom_column', [$this, 'add_column_value'], 10, 2);
 
-        add_action('restrict_manage_posts', array($this, 'add_custom_taxonomies_term_filter'));
+        add_action('restrict_manage_posts', [$this, 'add_custom_taxonomies_term_filter']);
 
-        add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME, array( $this, 'admin_script'));
+        add_action('admin_print_scripts-settings_page_'. GNCPL_PLUGIN_NAME, [ $this, 'admin_script']);
 
-        register_activation_hook(__FILE__, array($this, 'activationHook')); // plugin　active
-        register_deactivation_hook(__FILE__, array($this, 'deactivationHook')); // plugin　inactive
+        register_activation_hook(__FILE__, [$this, 'activationHook']); // plugin　active
+        register_deactivation_hook(__FILE__, [$this, 'deactivationHook']); // plugin　inactive
 
-        add_action('wp_ajax_update_gncpl_options', array($this, 'ajax_update_callback')); // wp_ajax callback
+        add_action('wp_ajax_update_gncpl_options', [$this, 'ajax_update_callback']); // wp_ajax callback
     }
 
 
@@ -170,8 +170,7 @@ class Gn_customize_post_list
             'GN Customize Post List',
             'administrator',
             'gn-customize-post-list',
-            array($this,'custom_admin'),
-            '',
+            [$this,'custom_admin'],
             2
         );
     }

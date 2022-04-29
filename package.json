@@ -1,6 +1,6 @@
 {
   "name": "gn-customize-post-list",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "You can customize the display items of the article list in wordpress.",
   "main": "index.js",
   "scripts": {
@@ -8,6 +8,7 @@
 		"wp-start": "wp-env start --xdebug",
 		"wp-update": "wp-env start --xdebug -- --update",
 		"wp-stop": "wp-env stop",
+    "cli": "wp-env run cli wp",
     "dev": "webpack --config webpack.config.dev.js",
     "prod": "webpack --config webpack.config.prod.js"
   },
