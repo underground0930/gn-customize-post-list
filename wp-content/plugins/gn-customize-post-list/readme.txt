@@ -70,6 +70,11 @@ Add a drop-down list of the terms that each taxonomy has to the post screen list
 *Release Date - 2019/10/6*
 * Fixed a notice on the management screen.
 
+*Release Date - 2022/4/29*
+* Fixed a notice on the management screen.
+* 「Requires PHP」updated
+* 「Requires at least」 updated
+* 「Tested up to」 updated
 
 *[JA]*
 
@@ -87,3 +92,11 @@ Add a drop-down list of the terms that each taxonomy has to the post screen list
 
 *リリース日 - 2019/10/6*
 * 管理画面でnoticeが出ていたので修正
+
+= 1.1.0 =
+
+*リリース日 - 2022/4/29*
+* 管理画面でnoticeが出ていたので修正
+* 「Requires PHP」を更新
+* 「Requires at least」 を更新
+* 「Tested up to」 を更新
